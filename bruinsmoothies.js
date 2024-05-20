@@ -42,7 +42,7 @@ export class Assignment3 extends Scene {
         program_state.projection_transform = Mat4.perspective(Math.PI / 4, context.width / context.height, .1, 1000);
 
         const t = program_state.animation_time / 1000, dt = program_state.animation_delta_time / 1000;
-        program_state.lights = [new Light(vec4(0, 0, 0, 1), color(1, 1, 1, 1), 100)];
+        program_state.lights = [new Light(vec4(0, 0, 1000, 1), color(1, 1, 1, 1), 100)];
         const model_transform = Mat4.identity();
 
         for (let ingredient of this.ingredients) {

@@ -34,7 +34,7 @@ Object.assign(defs,
     {Surfaces_Demo},
     {Text_Demo},
     {Transforms_Sandbox},
-    {Assignment3}
+    {BruinSmoothies}
 );
 
 // ******************** End extra step
