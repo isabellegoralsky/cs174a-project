@@ -5,10 +5,10 @@ const {
 } = tiny;
 
 class Ingredient {
-    constructor() {
-        this.center = vec3(0, 0, 0);
-        this.radius = 2;
-        this.direction = vec3(0.2, 0.5, 0);
+    constructor(x_pos, y_pos, rad, x_spd, y_spd) {
+        this.center = vec3(x_pos, y_pos, 0);
+        this.radius = rad;
+        this.direction = vec3(x_spd, y_spd, 0);
     }
 }
 
@@ -26,19 +26,12 @@ export class Assignment3 extends Scene {
 
         this.initial_camera_location = Mat4.look_at(vec3(0, 10, 20), vec3(0, 0, 0), vec3(0, 1, 0));
 
-        this.ingredients = [new Ingredient()];
+        this.ingredients = [new Ingredient(4, 0, 3, -0.2, 0.2)];
     }
 
     make_control_panel() {
-        this.key_triggered_button("View solar system", ["Control", "0"], () => this.attached = () => this.initial_camera_location);
+        this.key_triggered_button("Put stuff here", ["Control", "0"], () => console.log('test'));
         this.new_line();
-        this.key_triggered_button("Attach to planet 1", ["Control", "1"], () => this.attached = () => this.planet_1);
-        this.key_triggered_button("Attach to planet 2", ["Control", "2"], () => this.attached = () => this.planet_2);
-        this.new_line();
-        this.key_triggered_button("Attach to planet 3", ["Control", "3"], () => this.attached = () => this.planet_3);
-        this.key_triggered_button("Attach to planet 4", ["Control", "4"], () => this.attached = () => this.planet_4);
-        this.new_line();
-        this.key_triggered_button("Attach to moon", ["Control", "m"], () => this.attached = () => this.moon);
     }
 
     display(context, program_state) {
