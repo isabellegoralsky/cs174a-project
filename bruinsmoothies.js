@@ -30,7 +30,15 @@ class Apple extends Ingredient {
   }
 }
 
-// other fruit shapes? berry banana orange etc
+class Orange extends Ingredient {
+  constructor(x_pos, y_pos, x_spd, y_spd) {
+      const mat = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0.2, color: hex_color("#f68f24")});
+      const shp = new defs.Subdivision_Sphere(4);
+      super(x_pos, y_pos, x_spd, y_spd, 0.5, shp, mat);
+  }
+}
+
+// other fruit shapes? berry banana etc
 // sprite images somehow?? textures? (assn 4?)
 // if we do bananas, we could make them rotate/spin too for fun?
 
@@ -43,10 +51,11 @@ export class BruinSmoothies extends Scene {
         this.width = 30;
         this.height = 20;
 
-        this.valid_ingredients = ["Watermelon", "Apple"];
+        this.valid_ingredients = ["Watermelon", "Apple", "Orange"];
         this.ingredient_mapping = {
           "Watermelon": Watermelon,
-          "Apple": Apple
+          "Apple": Apple,
+          "Orange": Orange
         };
 
         [this.recipe, this.ingredients] = this.setup_level();
@@ -59,7 +68,7 @@ export class BruinSmoothies extends Scene {
     }
 
     setup_level() {
-      const total_ingr_count = 10;
+      const total_ingr_count = 3;
       const ingredient_list = [];
       const recipe = {}; // pick from set options?
         // bad/special types like bomb if we have time?
@@ -124,7 +133,7 @@ export class BruinSmoothies extends Scene {
             ingredient.center[1] = new_y;
         }
 
-        // check for collisions with each other --> update direction vector
+        // check for collisions with each other (n^2 overlap? z-buffer?) --> update direction vector
 
         // check for mouse picking --> handle by removing from array? and from recipe if correct? and affect score
     }
