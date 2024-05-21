@@ -42,20 +42,123 @@ class Orange extends Ingredient {
 // sprite images somehow?? textures? (assn 4?)
 // if we do bananas, we could make them rotate/spin too for fun?
 
+const BananaShape = defs.BananaShape = class BananaShape extends Shape {
+    constructor() {
+        super("position", "normal", "texture_coord");
+        const segments = 50; // More segments for smoother curves
+        const radius = 0.4; // Thickness of the banana
+        const length = 4.0; // Length of the banana
+        const curve_radius = 2.0; // Radius of the curve of the banana
+
+        // Create the banana shape using cylindrical segments around the curve
+        for (let i = 0; i <= segments; i++) {
+            const angle = Math.PI / segments * i;
+            const x = curve_radius * Math.sin(angle);
+            const y = length / segments * i - length / 2;
+            const z = curve_radius * Math.cos(angle) - curve_radius;
+
+            // Create circular segments along the banana
+            for (let j = 0; j <= segments; j++) {
+                const theta = 2 * Math.PI / segments * j;
+                const nx = radius * Math.cos(theta);
+                const nz = radius * Math.sin(theta);
+                this.arrays.position.push(vec3(x + nx, y, z + nz));
+                this.arrays.normal.push(vec3(nx, 0, nz).normalized());
+                this.arrays.texture_coord.push(vec(i / segments, j / segments));
+            }
+        }
+
+        // Create indices for the triangular segments
+        for (let i = 0; i < segments; i++) {
+            for (let j = 0; j < segments; j++) {
+                const first = i * (segments + 1) + j;
+                const second = first + segments + 1;
+                this.indices.push(first, second, first + 1);
+                this.indices.push(second, second + 1, first + 1);
+            }
+        }
+
+    }
+}
+
+
+// Banana looks a little weird in 3D, need to move camera angle so it looks normal
+class Banana extends Ingredient {
+    constructor(x_pos, y_pos, x_spd, y_spd) {
+        const mat = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0.2, color: hex_color("#fdd835")});
+        const shp = new defs.BananaShape(); // Use the custom banana shape
+        super(x_pos, y_pos, x_spd, y_spd, 0.5, shp, mat); // Adjust the radius as needed
+        this.rotation = 0;
+    }
+
+    draw(context, program_state, model_transform) {
+        // Draw the banana with rotation
+        let shape_mtx = model_transform
+            .times(Mat4.translation(this.center[0], this.center[1], 0))
+            .times(Mat4.rotation(this.rotation, 1, 0, 0)) // Apply rotation
+            .times(Mat4.scale(this.radius, this.radius, this.radius));
+        this.shape.draw(context, program_state, shape_mtx, this.material);
+    }
+}
+
+
+class BorderShape extends Shape {
+    constructor() {
+        super("position", "color");
+        const border_color = color(0.75, 0, 0.25, 1);
+        const thickness = 0.2;
+        const width = 36;
+        const height = 20;
+        this.arrays.position = [
+            // Bottom border
+            vec3(-width / 2 - thickness, -height / 2 - thickness, 0), vec3(width / 2 + thickness, -height / 2 - thickness, 0),
+            vec3(width / 2 + thickness, -height / 2, 0), vec3(-width / 2 - thickness, -height / 2, 0),
+
+            // Top border
+            vec3(-width / 2 - thickness, height / 2, 0), vec3(width / 2 + thickness, height / 2, 0),
+            vec3(width / 2 + thickness, height / 2 + thickness, 0), vec3(-width / 2 - thickness, height / 2 + thickness, 0),
+
+            // Left border
+            vec3(-width / 2 - thickness, -height / 2 - thickness, 0), vec3(-width / 2, -height / 2 - thickness, 0),
+            vec3(-width / 2, height / 2 + thickness, 0), vec3(-width / 2 - thickness, height / 2 + thickness, 0),
+
+            // Right border
+            vec3(width / 2, -height / 2 - thickness, 0), vec3(width / 2 + thickness, -height / 2 - thickness, 0),
+            vec3(width / 2 + thickness, height / 2 + thickness, 0), vec3(width / 2, height / 2 + thickness, 0),
+        ];
+        this.arrays.color = [
+            border_color, border_color, border_color, border_color,
+            border_color, border_color, border_color, border_color,
+            border_color, border_color, border_color, border_color,
+            border_color, border_color, border_color, border_color
+        ];
+        this.indices.push(0, 1, 2, 0, 2, 3); // Bottom border
+        this.indices.push(4, 5, 6, 4, 6, 7); // Top border
+        this.indices.push(8, 9, 10, 8, 10, 11); // Left border
+        this.indices.push(12, 13, 14, 12, 14, 15); // Right border
+    }
+}
+
+
 export class BruinSmoothies extends Scene {
     constructor() {
         super();
 
         // make it frame the game better if possible
         this.initial_camera_location = Mat4.look_at(vec3(0, 0, 25), vec3(0, 0, 0), vec3(0, 1, 0));
-        this.width = 30;
+        this.width = 36;
         this.height = 20;
 
-        this.valid_ingredients = ["Watermelon", "Apple", "Orange"];
+        this.border_shape = new BorderShape();
+        this.border_material = new Material(new defs.Basic_Shader(), {color: color(1, 1, 1, 1)});
+
+
+        this.valid_ingredients = ["Watermelon", "Apple", "Orange", "Banana"];
         this.ingredient_mapping = {
-          "Watermelon": Watermelon,
-          "Apple": Apple,
-          "Orange": Orange
+            "Watermelon": Watermelon,
+            "Apple": Apple,
+            "Orange": Orange,
+            "Banana": Banana
         };
 
         [this.recipe, this.ingredients] = this.setup_level();
@@ -64,7 +167,7 @@ export class BruinSmoothies extends Scene {
     random_number(min=0, max=1, int=false) { // inclusive, int for integers only
       let num = Math.random() * (max-min) + min;
       num = int ? Math.round(num) : num;
-      return num; 
+      return num;
     }
 
     setup_level() {
@@ -99,6 +202,11 @@ export class BruinSmoothies extends Scene {
       }
     }
 
+    draw_border(context, program_state) {
+        const model_transform = Mat4.identity();
+        this.border_shape.draw(context, program_state, model_transform, this.border_material);
+    }
+
     make_control_panel() {
         // do we need this? maybe for show/hide recipe
         this.key_triggered_button("Put stuff here", ["Control", "0"], () => console.log('test'));
@@ -116,6 +224,8 @@ export class BruinSmoothies extends Scene {
         const model_transform = Mat4.identity();
 
         // draw actual border? or frame game better so stuff hits the wall rather than a random space
+        this.draw_border(context, program_state);
+
 
         // draw each ingredient
         for (let ingredient of this.ingredients) {
