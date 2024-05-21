@@ -5,41 +5,75 @@ const {
 } = tiny;
 
 class Ingredient {
-    // can prob do this better
-    constructor(x_pos, y_pos, rad, x_spd, y_spd) {
+    constructor(x_pos, y_pos, x_spd, y_spd, rad, shp, mat) {
         this.center = vec3(x_pos, y_pos, 0);
-        this.radius = rad;
         this.direction = vec3(x_spd, y_spd, 0);
+        this.radius = rad;
+        this.shape = shp;
+        this.material = mat;
     }
 }
+
+class Watermelon extends Ingredient {
+  constructor(x_pos, y_pos, x_spd, y_spd) {
+      const mat = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0.2, color: hex_color("#5ab669")});
+      const shp = new defs.Subdivision_Sphere(4);
+      super(x_pos, y_pos, x_spd, y_spd, 1, shp, mat);
+  }
+}
+
+class Apple extends Ingredient {
+  constructor(x_pos, y_pos, x_spd, y_spd) {
+      const mat = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0.2, color: hex_color("#cc2525")});
+      const shp = new defs.Subdivision_Sphere(4);
+      super(x_pos, y_pos, x_spd, y_spd, 0.5, shp, mat);
+  }
+}
+
+// other fruit shapes? berry banana orange etc
+// sprite images somehow?? textures? (assn 4?)
+// if we do bananas, we could make them rotate/spin too for fun?
 
 export class BruinSmoothies extends Scene {
     constructor() {
         super();
-
-        this.shapes = {
-            sphere: new defs.Subdivision_Sphere(4),
-            // add other fruit shapes? banana etc?
-        };
-
-        this.materials = {
-            shiny: new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 1, specularity: 1, color: hex_color("#23bb82")})
-            // add fruit materials for diff shinyness, etc
-        }
 
         // make it frame the game better if possible
         this.initial_camera_location = Mat4.look_at(vec3(0, 0, 25), vec3(0, 0, 0), vec3(0, 1, 0));
         this.width = 30;
         this.height = 20;
 
+        this.valid_ingredients = ["Watermelon", "Apple"];
+        this.ingredient_mapping = {
+          "Watermelon": Watermelon,
+          "Apple": Apple
+        };
+
         [this.recipe, this.ingredients] = this.setup_level();
     }
 
+    random_number(min=0, max=1, int=false) { // inclusive, int for integers only
+      let num = Math.random() * (max-min) + min;
+      num = int ? Math.round(num) : num;
+      return num; 
+    }
+
     setup_level() {
+      const total_ingr_count = 10;
+      const ingredient_list = [];
       const recipe = {}; // pick from set options?
-      // create necessary ingredients for the recipe, plus a few extras, plus lots of incorrect ingredients
-        // randomly generated
-      const ingredient_list = [new Ingredient(4, 0, 3, -0.02, 0.02), new Ingredient(-2, 6, 1, 0.02, -0.04), new Ingredient(14, 9, 1, 0, 0)];
+        // bad/special types like bomb if we have time?
+      // generate ingredients to make recipe
+      const recipe_ingr_count = 0; // get from recipe size
+      const other_ingr_count = total_ingr_count - recipe_ingr_count;
+      for (let i = 0; i < other_ingr_count; i++) { // generate random other ingredients
+        const ingredient_type = this.valid_ingredients[this.random_number(0, this.valid_ingredients.length-1, true)];
+        const init_x = this.random_number(-this.width/2, this.width/2);
+        const init_y = this.random_number(-this.height/2, this.height/2);
+        const init_x_spd = this.random_number(-0.05, 0.05);
+        const init_y_spd = this.random_number(-0.05, 0.05);
+        ingredient_list.push(new this.ingredient_mapping[ingredient_type](init_x, init_y, init_x_spd, init_y_spd));
+      }
       return [recipe, ingredient_list];
     }
 
@@ -57,7 +91,7 @@ export class BruinSmoothies extends Scene {
     }
 
     make_control_panel() {
-        // do we need this?
+        // do we need this? maybe for show/hide recipe
         this.key_triggered_button("Put stuff here", ["Control", "0"], () => console.log('test'));
         this.new_line();
     }
@@ -85,7 +119,7 @@ export class BruinSmoothies extends Scene {
             shape_mtx = shape_mtx
                 .times(Mat4.translation(new_x, new_y, 0))
                 .times(Mat4.scale(ingredient.radius, ingredient.radius, ingredient.radius));
-            this.shapes.sphere.draw(context, program_state, shape_mtx, this.materials.shiny);
+            ingredient.shape.draw(context, program_state, shape_mtx, ingredient.material);
             ingredient.center[0] = new_x;
             ingredient.center[1] = new_y;
         }

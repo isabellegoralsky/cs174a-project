@@ -1,9 +1,4 @@
 # cs174a-project
 Bruin Smoothies
 
-
-To do list:
-ingredient collisions
-mouse picking
-recipe stuff
-overload ingredient class with specific fruits we want. everything a sphere? or diff shapes like banana? sprite images or js textures? also diff materials w diff lightings
+Welcome to the fruit stand! Our customers are thirsty, and they want their smoothies now! Unfortunately, we spilled the ingredients everywhere and they're bouncing around. Help us out by clicking the necessary ingredients to fulfill the recipe!
