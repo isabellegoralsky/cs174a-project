@@ -170,23 +170,44 @@ export class BruinSmoothies extends Scene {
       return num;
     }
 
+    // avoids ingredients spawning at the same location
+    generate_valid_position(existing_ingredients, radius, margin) {
+        let is_valid_position = false;
+        let x, y;
+
+        while (!is_valid_position) {
+            is_valid_position = true;
+            x = this.random_number(-this.width/2 + radius + margin, this.width/2 - radius - margin);
+            y = this.random_number(-this.height/2 + radius + margin, this.height/2 - radius - margin);
+
+            for (let ingr of existing_ingredients) {
+                const distance = Math.sqrt(Math.pow(x - ingr.center[0], 2) + Math.pow(y - ingr.center[1], 2));
+                if (distance < radius + ingr.radius + margin) {
+                    is_valid_position = false;
+                    break;
+                }
+            }
+        }
+
+        return [x, y];
+    }
+
     setup_level() {
-      const total_ingr_count = 3;
-      const ingredient_list = [];
-      const recipe = {}; // pick from set options?
-        // bad/special types like bomb if we have time?
-      // generate ingredients to make recipe
-      const recipe_ingr_count = 0; // get from recipe size
-      const other_ingr_count = total_ingr_count - recipe_ingr_count;
-      for (let i = 0; i < other_ingr_count; i++) { // generate random other ingredients
-        const ingredient_type = this.valid_ingredients[this.random_number(0, this.valid_ingredients.length-1, true)];
-        const init_x = this.random_number(-this.width/2, this.width/2);
-        const init_y = this.random_number(-this.height/2, this.height/2);
-        const init_x_spd = this.random_number(-0.05, 0.05);
-        const init_y_spd = this.random_number(-0.05, 0.05);
-        ingredient_list.push(new this.ingredient_mapping[ingredient_type](init_x, init_y, init_x_spd, init_y_spd));
-      }
-      return [recipe, ingredient_list];
+        const total_ingr_count = 4;
+        const ingredient_list = [];
+        const recipe = {}; // pick from set options?
+        const margin = 0.5; // Margin to avoid spawning on the border
+        const recipe_ingr_count = 0; // get from recipe size
+        const other_ingr_count = total_ingr_count - recipe_ingr_count;
+        for (let i = 0; i < other_ingr_count; i++) { // generate random other ingredients
+            const ingredient_type = this.valid_ingredients[this.random_number(0, this.valid_ingredients.length-1, true)];
+            const radius = ingredient_type === "Watermelon" ? 1 : 0.5; // Define radius based on ingredient type
+            const [init_x, init_y] = this.generate_valid_position(ingredient_list, radius, margin);
+            const init_x_spd = this.random_number(-0.05, 0.05);
+            const init_y_spd = this.random_number(-0.05, 0.05);
+            ingredient_list.push(new this.ingredient_mapping[ingredient_type](init_x, init_y, init_x_spd, init_y_spd));
+        }
+        return [recipe, ingredient_list];
     }
 
     check_wall_collision(ingredient) {
@@ -200,6 +221,19 @@ export class BruinSmoothies extends Scene {
       if (ingredient.center[1]-ingredient.radius <= -half_height || ingredient.center[1]+ingredient.radius >= half_height) {
           ingredient.direction[1] *= -1;
       }
+    }
+
+    check_ingredient_collision(ingredient1, ingredient2) {
+        const distance = Math.sqrt(
+            Math.pow(ingredient1.center[0] - ingredient2.center[0], 2) +
+            Math.pow(ingredient1.center[1] - ingredient2.center[1], 2)
+        );
+
+        if (distance < ingredient1.radius + ingredient2.radius) {
+            // Simple collision response: reverse the directions
+            ingredient1.direction = ingredient1.direction.times(-1);
+            ingredient2.direction = ingredient2.direction.times(-1);
+        }
     }
 
     draw_border(context, program_state) {
@@ -226,6 +260,12 @@ export class BruinSmoothies extends Scene {
         // draw actual border? or frame game better so stuff hits the wall rather than a random space
         this.draw_border(context, program_state);
 
+        // Check for collisions between ingredients
+        for (let i = 0; i < this.ingredients.length; i++) {
+            for (let j = i + 1; j < this.ingredients.length; j++) {
+                this.check_ingredient_collision(this.ingredients[i], this.ingredients[j]);
+            }
+        }
 
         // draw each ingredient
         for (let ingredient of this.ingredients) {
