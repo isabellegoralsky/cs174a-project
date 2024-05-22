@@ -6,3 +6,5 @@ Welcome to the fruit stand! Our customers are thirsty, and they want their smoot
 - Fix collisions (physics-based so they actually take angle into account)
 - Add more fruits (berries)
 - Fix banana model
+- Implement recipe stuff
+- Scores
