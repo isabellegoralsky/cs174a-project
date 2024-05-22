@@ -18,11 +18,11 @@ class Ingredient {
 
 // TODO make oval
 class Watermelon extends Ingredient {
-  constructor(x_pos, y_pos, x_spd, y_spd) {
-      const mat = new Material(new Watermelon_Shader(), {ambient: 1, diffusivity: 0.2, specularity: .8, color: hex_color("#5ab669")});
-      const shp = new defs.Subdivision_Sphere(4);
-      super(x_pos, y_pos, x_spd, y_spd, 1, shp, mat);
-  }
+    constructor(x_pos, y_pos, x_spd, y_spd) {
+        const mat = new Material(new Watermelon_Shader(), {ambient: 1, diffusivity: 0.2, specularity: .8, color: hex_color("#5ab669")});
+        const shp = new defs.Subdivision_Sphere(4);
+        super(x_pos, y_pos, x_spd, y_spd, 1, shp, mat);
+    }
 }
 
 class Watermelon_Shader extends Shader {
@@ -82,21 +82,21 @@ class Watermelon_Shader extends Shader {
 ////////////////////////////// APPLE //////////////////////////////
 
 class Apple extends Ingredient {
-  constructor(x_pos, y_pos, x_spd, y_spd) {
-      const mat = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: .9, color: hex_color("#ff0800")});
-      const shp = new defs.Subdivision_Sphere(4);
-      super(x_pos, y_pos, x_spd, y_spd, .5, shp, mat);
-  }
+    constructor(x_pos, y_pos, x_spd, y_spd) {
+        const mat = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: .9, color: hex_color("#ff0800")});
+        const shp = new defs.Subdivision_Sphere(4);
+        super(x_pos, y_pos, x_spd, y_spd, .5, shp, mat);
+    }
 }
 
 ////////////////////////////// ORANGE //////////////////////////////
 
 class Orange extends Ingredient {
-  constructor(x_pos, y_pos, x_spd, y_spd) {
-      const mat = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0.3, color: hex_color("#ff8100")});
-      const shp = new defs.Subdivision_Sphere(4);
-      super(x_pos, y_pos, x_spd, y_spd, 0.5, shp, mat);
-  }
+    constructor(x_pos, y_pos, x_spd, y_spd) {
+        const mat = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0.3, color: hex_color("#ff8100")});
+        const shp = new defs.Subdivision_Sphere(4);
+        super(x_pos, y_pos, x_spd, y_spd, 0.5, shp, mat);
+    }
 }
 
 // other fruit shapes? berry banana etc
@@ -202,6 +202,46 @@ class BorderShape extends Shape {
     }
 }
 
+// detecting mouse clicks
+// check if the mouse ray intersects with any ingredient
+class MouseControls extends Scene {
+    constructor(bruin_smoothies) {
+        super();
+        this.bruin_smoothies = bruin_smoothies;
+        this.mouse_enabled_canvases = new Set();
+    }
+
+    add_mouse_controls(canvas) {
+        const mouse_position = (e, rect = canvas.getBoundingClientRect()) =>
+            vec(e.clientX - (rect.left + rect.right) / 2, e.clientY - (rect.bottom + rect.top) / 2);
+
+        canvas.addEventListener("mousedown", e => {
+            e.preventDefault();
+            this.handle_click(e, canvas);
+        });
+    }
+
+    handle_click(event, canvas) {
+        const rect = canvas.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+
+        const world_space = vec3(
+            (x / rect.width) * this.bruin_smoothies.width - this.bruin_smoothies.width / 2,
+            this.bruin_smoothies.height / 2 - (y / rect.height) * this.bruin_smoothies.height,
+            0
+        );
+
+        this.bruin_smoothies.check_ingredient_click(world_space);
+    }
+
+    display(context, graphics_state) {
+        if (!this.mouse_enabled_canvases.has(context.canvas)) {
+            this.add_mouse_controls(context.canvas);
+            this.mouse_enabled_canvases.add(context.canvas);
+        }
+    }
+}
 
 export class BruinSmoothies extends Scene {
     constructor() {
@@ -225,12 +265,40 @@ export class BruinSmoothies extends Scene {
         };
 
         [this.recipe, this.ingredients] = this.setup_level();
+
+        // Player score
+        this.score = 0;
+        this.click_controls = new MouseControls(this);
+
     }
 
+    check_ingredient_click(world_space) {
+        for (let i = 0; i < this.ingredients.length; i++) {
+            const ingredient = this.ingredients[i];
+            const distance = Math.sqrt(
+                Math.pow(world_space[0] - ingredient.center[0], 2) +
+                Math.pow(world_space[1] - ingredient.center[1], 2)
+            );
+
+            if (distance < ingredient.radius) {
+                this.score += 1;
+                this.ingredients.splice(i, 1);
+                this.play_sound();
+                break;
+            }
+        }
+    }
+
+    play_sound() {
+        const audio = new Audio('mp3-sounds/juicy-splash.mp3');
+        audio.play();
+    }
+
+
     random_number(min=0, max=1, int=false) { // inclusive, int for integers only
-      let num = Math.random() * (max-min) + min;
-      num = int ? Math.round(num) : num;
-      return num;
+        let num = Math.random() * (max-min) + min;
+        num = int ? Math.round(num) : num;
+        return num;
     }
 
     // avoids ingredients spawning at the same location
@@ -274,16 +342,16 @@ export class BruinSmoothies extends Scene {
     }
 
     check_wall_collision(ingredient) {
-      const half_width = this.width / 2;
-      const half_height = this.height / 2;
+        const half_width = this.width / 2;
+        const half_height = this.height / 2;
 
-      if (ingredient.center[0]-ingredient.radius <= -half_width || ingredient.center[0]+ingredient.radius >= half_width) {
-          ingredient.direction[0] *= -1; // could easily speed up with > |1| if desired
-      }
+        if (ingredient.center[0]-ingredient.radius <= -half_width || ingredient.center[0]+ingredient.radius >= half_width) {
+            ingredient.direction[0] *= -1; // could easily speed up with > |1| if desired
+        }
 
-      if (ingredient.center[1]-ingredient.radius <= -half_height || ingredient.center[1]+ingredient.radius >= half_height) {
-          ingredient.direction[1] *= -1;
-      }
+        if (ingredient.center[1]-ingredient.radius <= -half_height || ingredient.center[1]+ingredient.radius >= half_height) {
+            ingredient.direction[1] *= -1;
+        }
     }
 
     // check for collisions with each other (n^2 overlap? z-buffer?) --> update direction vector
@@ -317,9 +385,9 @@ export class BruinSmoothies extends Scene {
         if (!context.scratchpad.controls) {
             this.children.push(context.scratchpad.controls = new defs.Movement_Controls());
             program_state.set_camera(this.initial_camera_location);
+
         }
         program_state.projection_transform = Mat4.perspective(Math.PI / 4, context.width / context.height, .1, 1000);
-        // const t = program_state.animation_time / 1000, dt = program_state.animation_delta_time / 1000;
         program_state.lights = [new Light(vec4(0, 0, 1000, 1), color(1, 1, 1, 1), 10000000)];
         const model_transform = Mat4.identity();
 
@@ -349,7 +417,8 @@ export class BruinSmoothies extends Scene {
             ingredient.center[1] = new_y;
         }
 
-
-        // check for mouse picking --> handle by removing from array? and from recipe if correct? and affect score
+        if (!this.children.includes(this.click_controls)) {
+            this.children.push(this.click_controls);
+        }
     }
 }

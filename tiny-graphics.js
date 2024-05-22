@@ -1291,6 +1291,7 @@ const Webgl_Manager = tiny.Webgl_Manager =
                 canvas,
                 scratchpad: {},
                 program_state: new Program_State()
+
             };
             Object.assign(this, members);
             // Get the GPU ready, creating a new WebGL context for this canvas:
@@ -1320,7 +1321,10 @@ const Webgl_Manager = tiny.Webgl_Manager =
                 || function (callback, element) {
                     w.setTimeout(callback, 1000 / 60);
                 })(window);
+
         }
+
+
 
         set_size(dimensions = [1080, 600]) {
             // set_size():  Allows you to re-size the canvas anytime.  To work, it must change the
