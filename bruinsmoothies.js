@@ -5,11 +5,12 @@ const {
 } = tiny;
 
 class Ingredient {
-    constructor(x_pos, y_pos, x_spd, y_spd, rad, shp, mat, shp2=null, mat2 = null, shp3=null, mat3 = null) {
+    constructor(x_pos, y_pos, x_spd, y_spd, rad, shp, mas, mat, shp2=null, mat2=null, shp3=null, mat3=null) {
         this.center = vec3(x_pos, y_pos, 0);
         this.direction = vec3(x_spd, y_spd, 0);
         this.radius = rad;
         this.shape = shp;
+        this.mass = mas;
         this.material = mat;
         this.shape2 = shp2;
         this.material2 = mat2;
@@ -24,7 +25,7 @@ class Watermelon extends Ingredient {
   constructor(x_pos, y_pos, x_spd, y_spd) {
       const mat = new Material(new Watermelon_Shader(), {ambient: 1, diffusivity: 0.2, specularity: .8, color: hex_color("#5ab669")});
       const shp = new defs.Subdivision_Sphere(4);
-      super(x_pos, y_pos, x_spd, y_spd, 1, shp, mat);
+      super(x_pos, y_pos, x_spd, y_spd, 1, shp, 3, mat);
   }
 }
 
@@ -161,8 +162,6 @@ const AppleShape = defs.AppleShape = class AppleShape extends Shape {
     }
 }
 
-
-
 class Apple extends Ingredient {
   constructor(x_pos, y_pos, x_spd, y_spd) {
       const mat = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: .9, color: hex_color("#ff0800")});
@@ -174,7 +173,7 @@ class Apple extends Ingredient {
       const shp3 = new defs.Square();
       const mat3 = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0, color: hex_color("#594A4B")});
 
-      super(x_pos, y_pos, x_spd, y_spd, .5, shp, mat, shp2, mat2, shp3, mat3);
+      super(x_pos, y_pos, x_spd, y_spd, .5, shp, 1, mat, shp2, mat2, shp3, mat3);
   }
 }
 
@@ -189,14 +188,10 @@ class Orange extends Ingredient {
       const shp2 = new defs.Triangle();
       const mat2 = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0.1, color: hex_color("#1F9A0E")});
 
-      super(x_pos, y_pos, x_spd, y_spd, .75, shp, mat, shp2, mat2);
+      super(x_pos, y_pos, x_spd, y_spd, .75, shp, 1, mat, shp2, mat2);
 
   }
 }
-
-// other fruit shapes? berry banana etc
-// sprite images somehow?? textures? (assn 4?)
-// if we do bananas, we could make them rotate/spin too for fun?
 
 ////////////////////////////// BANANA //////////////////////////////
 
@@ -239,13 +234,12 @@ const BananaShape = defs.BananaShape = class BananaShape extends Shape {
     }
 }
 
-
 // Banana looks a little weird in 3D, need to move camera angle so it looks normal
 class Banana extends Ingredient {
     constructor(x_pos, y_pos, x_spd, y_spd) {
         const mat = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0.2, color: hex_color("#fdd835")});
         const shp = new defs.BananaShape(); // Use the custom banana shape
-        super(x_pos, y_pos, x_spd, y_spd, 0.5, shp, mat); // Adjust the radius as needed
+        super(x_pos, y_pos, x_spd, y_spd, 0.6, shp, 2, mat); // Adjust the radius as needed
         this.rotation = 0;
     }
 
@@ -259,6 +253,7 @@ class Banana extends Ingredient {
     }
 }
 
+// berries? spinning?
 
 ////////////////////////////////// BORDER ////////////////////////////////////
 
@@ -344,7 +339,6 @@ export class BruinSmoothies extends Scene {
     constructor() {
         super();
 
-        // make it frame the game better if possible
         this.initial_camera_location = Mat4.look_at(vec3(0, 0, 25), vec3(0, 0, 0), vec3(0, 1, 0));
         this.width = 36;
         this.height = 20;
@@ -366,7 +360,6 @@ export class BruinSmoothies extends Scene {
         // Player score
         this.score = 0;
         this.click_controls = new MouseControls(this);
-
     }
 
     check_ingredient_click(world_space) {
@@ -390,7 +383,6 @@ export class BruinSmoothies extends Scene {
         const audio = new Audio('mp3-sounds/juicy-splash.mp3');
         audio.play();
     }
-
 
     random_number(min=0, max=1, int=false) { // inclusive, int for integers only
         let num = Math.random() * (max-min) + min;
@@ -421,7 +413,7 @@ export class BruinSmoothies extends Scene {
     }
 
     setup_level() {
-        const total_ingr_count = 4;
+        const total_ingr_count = 8;
         const ingredient_list = [];
         const recipe = {}; // pick from set options?
         const margin = 0.5; // Margin to avoid spawning on the border
@@ -453,15 +445,28 @@ export class BruinSmoothies extends Scene {
 
     // check for collisions with each other (n^2 overlap? z-buffer?) --> update direction vector
     check_ingredient_collision(ingredient1, ingredient2) {
-        const distance = Math.sqrt(
-            Math.pow(ingredient1.center[0] - ingredient2.center[0], 2) +
-            Math.pow(ingredient1.center[1] - ingredient2.center[1], 2)
-        );
+        const x_dist = ingredient1.center[0] - ingredient2.center[0];
+        const y_dist = ingredient1.center[1] - ingredient2.center[1];
+        const dist = Math.sqrt(x_dist*x_dist + y_dist*y_dist);
 
-        if (distance < ingredient1.radius + ingredient2.radius) {
-            // Simple collision response: reverse the directions
-            ingredient1.direction = ingredient1.direction.times(-1);
-            ingredient2.direction = ingredient2.direction.times(-1);
+        if (dist < ingredient1.radius + ingredient2.radius) {
+            const normalX = x_dist / dist;
+            const normalY = y_dist / dist;
+
+            const relVelX = ingredient2.direction[0] - ingredient1.direction[0];
+            const relVelY = ingredient2.direction[1] - ingredient1.direction[1];
+
+            const velAlongNormal = relVelX * normalX + relVelY * normalY;
+
+            const totalMass = ingredient1.mass + ingredient2.mass;
+            const impulseMag = (2 * velAlongNormal) / totalMass;
+            const impulseX = impulseMag * normalX;
+            const impulseY = impulseMag * normalY;
+
+            ingredient1.direction[0] += impulseX * ingredient2.mass;
+            ingredient1.direction[1] += impulseY * ingredient2.mass;
+            ingredient2.direction[0] -= impulseX * ingredient1.mass;
+            ingredient2.direction[1] -= impulseY * ingredient1.mass;
         }
     }
 
@@ -488,7 +493,6 @@ export class BruinSmoothies extends Scene {
         program_state.lights = [new Light(vec4(0, 0, 1000, 1), color(1, 1, 1, 1), 10000000)];
         const model_transform = Mat4.identity();
 
-        // draw actual border? or frame game better so stuff hits the wall rather than a random space
         this.draw_border(context, program_state);
 
         // Check for collisions between ingredients
