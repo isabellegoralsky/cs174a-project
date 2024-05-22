@@ -5,12 +5,13 @@ const {
 } = tiny;
 
 class Ingredient {
-    constructor(x_pos, y_pos, x_spd, y_spd, rad, shp, mas, mat, shp2=null, mat2=null, shp3=null, mat3=null) {
+    constructor(x_pos, y_pos, x_spd, y_spd, rad, mas, 
+                shp, mat, shp2=null, mat2=null, shp3=null, mat3=null) {
         this.center = vec3(x_pos, y_pos, 0);
         this.direction = vec3(x_spd, y_spd, 0);
         this.radius = rad;
-        this.shape = shp;
         this.mass = mas;
+        this.shape = shp;
         this.material = mat;
         this.shape2 = shp2;
         this.material2 = mat2;
@@ -23,9 +24,10 @@ class Ingredient {
 
 class Watermelon extends Ingredient {
   constructor(x_pos, y_pos, x_spd, y_spd) {
-      const mat = new Material(new Watermelon_Shader(), {ambient: 1, diffusivity: 0.2, specularity: .8, color: hex_color("#5ab669")});
       const shp = new defs.Subdivision_Sphere(4);
-      super(x_pos, y_pos, x_spd, y_spd, 1, shp, 3, mat);
+      const mat = new Material(new Watermelon_Shader(), {ambient: 1, diffusivity: 0.2, specularity: .8, color: hex_color("#5ab669")});
+
+      super(x_pos, y_pos, x_spd, y_spd, 1, 3, shp, mat);
   }
 }
 
@@ -164,16 +166,18 @@ const AppleShape = defs.AppleShape = class AppleShape extends Shape {
 
 class Apple extends Ingredient {
   constructor(x_pos, y_pos, x_spd, y_spd) {
-      const mat = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: .9, color: hex_color("#ff0800")});
       const shp = new defs.AppleShape();
+      const mat = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: .9, color: hex_color("#ff0800")});
 
+      // leaf
       const shp2 = new defs.Triangle();
       const mat2 = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0.1, color: hex_color("#1F9A0E")});
 
+      // stem
       const shp3 = new defs.Square();
       const mat3 = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0, color: hex_color("#594A4B")});
 
-      super(x_pos, y_pos, x_spd, y_spd, .5, shp, 1, mat, shp2, mat2, shp3, mat3);
+      super(x_pos, y_pos, x_spd, y_spd, .5, 1, shp, mat, shp2, mat2, shp3, mat3);
   }
 }
 
@@ -181,14 +185,14 @@ class Apple extends Ingredient {
 
 class Orange extends Ingredient {
   constructor(x_pos, y_pos, x_spd, y_spd) {
-      const mat = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0.3, color: hex_color("#ff8100")});
       const shp = new defs.Subdivision_Sphere(4);
+      const mat = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0.3, color: hex_color("#ff8100")});
 
       // leaf
       const shp2 = new defs.Triangle();
       const mat2 = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0.1, color: hex_color("#1F9A0E")});
 
-      super(x_pos, y_pos, x_spd, y_spd, .75, shp, 1, mat, shp2, mat2);
+      super(x_pos, y_pos, x_spd, y_spd, .75, 1.5, shp, mat, shp2, mat2);
 
   }
 }
@@ -237,9 +241,11 @@ const BananaShape = defs.BananaShape = class BananaShape extends Shape {
 // Banana looks a little weird in 3D, need to move camera angle so it looks normal
 class Banana extends Ingredient {
     constructor(x_pos, y_pos, x_spd, y_spd) {
+        const shp = new defs.BananaShape();
         const mat = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0.2, color: hex_color("#fdd835")});
-        const shp = new defs.BananaShape(); // Use the custom banana shape
-        super(x_pos, y_pos, x_spd, y_spd, 0.6, shp, 2, mat); // Adjust the radius as needed
+
+        super(x_pos, y_pos, x_spd, y_spd, 0.6, 2, shp, mat);
+
         this.rotation = 0;
     }
 
@@ -345,7 +351,6 @@ export class BruinSmoothies extends Scene {
 
         this.border_shape = new BorderShape();
         this.border_material = new Material(new defs.Basic_Shader(), {color: color(1, 1, 1, 1)});
-
 
         this.valid_ingredients = ["Watermelon", "Apple", "Orange", "Banana"];
         this.ingredient_mapping = {
