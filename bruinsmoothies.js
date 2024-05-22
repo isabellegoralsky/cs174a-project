@@ -5,18 +5,19 @@ const {
 } = tiny;
 
 class Ingredient {
-    constructor(x_pos, y_pos, x_spd, y_spd, rad, shp, mat) {
+    constructor(x_pos, y_pos, x_spd, y_spd, rad, shp, mat, shp2=null, mat2 = null) {
         this.center = vec3(x_pos, y_pos, 0);
         this.direction = vec3(x_spd, y_spd, 0);
         this.radius = rad;
         this.shape = shp;
         this.material = mat;
+        this.shape2 = shp2;
+        this.material2 = mat2;
     }
 }
 
 ////////////////////////////// WATERMELON //////////////////////////////
 
-// TODO make oval
 class Watermelon extends Ingredient {
   constructor(x_pos, y_pos, x_spd, y_spd) {
       const mat = new Material(new Watermelon_Shader(), {ambient: 1, diffusivity: 0.2, specularity: .8, color: hex_color("#5ab669")});
@@ -95,7 +96,13 @@ class Orange extends Ingredient {
   constructor(x_pos, y_pos, x_spd, y_spd) {
       const mat = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0.3, color: hex_color("#ff8100")});
       const shp = new defs.Subdivision_Sphere(4);
-      super(x_pos, y_pos, x_spd, y_spd, 0.5, shp, mat);
+
+      // leaf
+      const shp2 = new defs.Triangle();
+      const mat2 = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0.1, color: hex_color("#1F9A0E")});
+
+      super(x_pos, y_pos, x_spd, y_spd, .75, shp, mat, shp2, mat2);
+
   }
 }
 
@@ -164,6 +171,8 @@ class Banana extends Ingredient {
     }
 }
 
+
+////////////////////////////////// BORDER ////////////////////////////////////
 
 class BorderShape extends Shape {
     constructor() {
@@ -341,7 +350,21 @@ export class BruinSmoothies extends Scene {
             shape_mtx = shape_mtx
                 .times(Mat4.translation(new_x, new_y, 0))
                 .times(Mat4.scale(ingredient.radius, ingredient.radius, ingredient.radius));
+
+            if (ingredient instanceof Watermelon) {
+                shape_mtx = shape_mtx.times(Mat4.scale(1.3, 1.5, 1.3));
+            }
+
             ingredient.shape.draw(context, program_state, shape_mtx, ingredient.material);
+
+            if (ingredient.shape2 !== null){
+                // below line proves Orange enters here
+                // ingredient.shape.draw(context, program_state, shape_mtx.times(Mat4.scale(3,3,3)), ingredient.material);
+                const leaf_offset = Mat4.translation(0, .8, 0).times(Mat4.rotation(Math.PI / 3, 0, 0, 1));
+                const leaf_transform = shape_mtx.times(leaf_offset).times(Mat4.scale(.8,.8, .8));
+
+                ingredient.shape2.draw(context, program_state, leaf_transform, ingredient.material2);
+            }
             ingredient.center[0] = new_x;
             ingredient.center[1] = new_y;
         }
