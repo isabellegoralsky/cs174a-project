@@ -223,6 +223,7 @@ export class BruinSmoothies extends Scene {
       }
     }
 
+    // check for collisions with each other (n^2 overlap? z-buffer?) --> update direction vector
     check_ingredient_collision(ingredient1, ingredient2) {
         const distance = Math.sqrt(
             Math.pow(ingredient1.center[0] - ingredient2.center[0], 2) +
@@ -244,6 +245,8 @@ export class BruinSmoothies extends Scene {
     make_control_panel() {
         // do we need this? maybe for show/hide recipe
         this.key_triggered_button("Put stuff here", ["Control", "0"], () => console.log('test'));
+        this.new_line();
+        this.key_triggered_button("Score!?", ["Control", "0"], () => console.log('test'));
         this.new_line();
     }
 
@@ -283,7 +286,6 @@ export class BruinSmoothies extends Scene {
             ingredient.center[1] = new_y;
         }
 
-        // check for collisions with each other (n^2 overlap? z-buffer?) --> update direction vector
 
         // check for mouse picking --> handle by removing from array? and from recipe if correct? and affect score
     }
