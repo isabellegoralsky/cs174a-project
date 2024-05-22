@@ -5,24 +5,27 @@ const {
 } = tiny;
 
 class Ingredient {
-    constructor(x_pos, y_pos, x_spd, y_spd, rad, shp, mat) {
+    constructor(x_pos, y_pos, x_spd, y_spd, rad, shp, mat, shp2=null, mat2 = null, shp3=null, mat3 = null) {
         this.center = vec3(x_pos, y_pos, 0);
         this.direction = vec3(x_spd, y_spd, 0);
         this.radius = rad;
         this.shape = shp;
         this.material = mat;
+        this.shape2 = shp2;
+        this.material2 = mat2;
+        this.shape3 = shp3;
+        this.material3 = mat3;
     }
 }
 
 ////////////////////////////// WATERMELON //////////////////////////////
 
-// TODO make oval
 class Watermelon extends Ingredient {
-    constructor(x_pos, y_pos, x_spd, y_spd) {
-        const mat = new Material(new Watermelon_Shader(), {ambient: 1, diffusivity: 0.2, specularity: .8, color: hex_color("#5ab669")});
-        const shp = new defs.Subdivision_Sphere(4);
-        super(x_pos, y_pos, x_spd, y_spd, 1, shp, mat);
-    }
+  constructor(x_pos, y_pos, x_spd, y_spd) {
+      const mat = new Material(new Watermelon_Shader(), {ambient: 1, diffusivity: 0.2, specularity: .8, color: hex_color("#5ab669")});
+      const shp = new defs.Subdivision_Sphere(4);
+      super(x_pos, y_pos, x_spd, y_spd, 1, shp, mat);
+  }
 }
 
 class Watermelon_Shader extends Shader {
@@ -81,22 +84,114 @@ class Watermelon_Shader extends Shader {
 
 ////////////////////////////// APPLE //////////////////////////////
 
-class Apple extends Ingredient {
-    constructor(x_pos, y_pos, x_spd, y_spd) {
-        const mat = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: .9, color: hex_color("#ff0800")});
-        const shp = new defs.Subdivision_Sphere(4);
-        super(x_pos, y_pos, x_spd, y_spd, .5, shp, mat);
+const HalfApple = defs.HalfApple = class HalfApple extends Shape {
+    constructor() {
+        super("position", "normal", "texture_coord");
+
+        const numSegments = 20; // Number of segments for smoothness
+        const radius = 0.5; // Radius of the apple
+        const height = 1.0; // Height of the apple
+
+        for (let i = 0; i <= numSegments; i++) {
+            const theta = i * Math.PI / numSegments; // Angle for height segments
+
+            for (let j = 0; j <= numSegments; j++) {
+                const phi = j * 2 * Math.PI / numSegments; // Angle for circular segments
+
+                // Calculate the x, y, z positions of the vertices
+                const x = radius * Math.sin(theta) * Math.cos(phi);
+                const y = height * (Math.cos(theta) - 0.5); // Adjusted to look more like an apple
+                const z = radius * Math.sin(theta) * Math.sin(phi);
+
+                // Push the position
+                this.arrays.position.push(vec3(x, y, z));
+
+                // Calculate and push the normal
+                const normal = vec3(x, y, z).normalized();
+                this.arrays.normal.push(normal);
+
+                // Push the texture coordinate
+                this.arrays.texture_coord.push(vec(j / numSegments, i / numSegments));
+            }
+        }
+
+        // Create the indices for the apple shape
+        for (let i = 0; i < numSegments; i++) {
+            for (let j = 0; j < numSegments; j++) {
+                const first = i * (numSegments + 1) + j;
+                const second = first + numSegments + 1;
+
+                this.indices.push(first, second, first + 1);
+                this.indices.push(second, second + 1, first + 1);
+            }
+        }
     }
+}
+
+const AppleShape = defs.AppleShape = class AppleShape extends Shape {
+    constructor() {
+        super("position", "normal", "texture_coord");
+
+        const halfApple1 = new defs.HalfApple();
+        const halfApple2 = new defs.HalfApple();
+
+        // Offset the second half to form the complete apple
+        const offset = Mat4.translation(0, 0, -0.5);
+
+        // Merge the first half apple vertices
+        this.arrays.position.push(...halfApple1.arrays.position);
+        this.arrays.normal.push(...halfApple1.arrays.normal);
+        this.arrays.texture_coord.push(...halfApple1.arrays.texture_coord);
+
+        // Merge the second half apple vertices
+        for (let i = 0; i < halfApple2.arrays.position.length; i++) {
+            const pos = halfApple2.arrays.position[i];
+            const transformedPos = offset.times(pos.to4(1)).to3();
+            this.arrays.position.push(transformedPos);
+            this.arrays.normal.push(halfApple2.arrays.normal[i]);
+            this.arrays.texture_coord.push(halfApple2.arrays.texture_coord[i]);
+        }
+
+        // Merge the indices
+        const len = halfApple1.arrays.position.length;
+        this.indices.push(...halfApple1.indices);
+        for (let i = 0; i < halfApple2.indices.length; i++) {
+            this.indices.push(halfApple2.indices[i] + len);
+        }
+    }
+}
+
+
+
+class Apple extends Ingredient {
+  constructor(x_pos, y_pos, x_spd, y_spd) {
+      const mat = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: .9, color: hex_color("#ff0800")});
+      const shp = new defs.AppleShape();
+
+      const shp2 = new defs.Triangle();
+      const mat2 = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0.1, color: hex_color("#1F9A0E")});
+
+      const shp3 = new defs.Square();
+      const mat3 = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0, color: hex_color("#594A4B")});
+
+      super(x_pos, y_pos, x_spd, y_spd, .5, shp, mat, shp2, mat2, shp3, mat3);
+  }
 }
 
 ////////////////////////////// ORANGE //////////////////////////////
 
 class Orange extends Ingredient {
-    constructor(x_pos, y_pos, x_spd, y_spd) {
-        const mat = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0.3, color: hex_color("#ff8100")});
-        const shp = new defs.Subdivision_Sphere(4);
-        super(x_pos, y_pos, x_spd, y_spd, 0.5, shp, mat);
-    }
+  constructor(x_pos, y_pos, x_spd, y_spd) {
+      const mat = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0.3, color: hex_color("#ff8100")});
+      const shp = new defs.Subdivision_Sphere(4);
+
+      // leaf
+      const shp2 = new defs.Triangle();
+      const mat2 = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0.1, color: hex_color("#1F9A0E")});
+
+      super(x_pos, y_pos, x_spd, y_spd, .75, shp, mat, shp2, mat2);
+
+  }
 }
 
 // other fruit shapes? berry banana etc
@@ -164,6 +259,8 @@ class Banana extends Ingredient {
     }
 }
 
+
+////////////////////////////////// BORDER ////////////////////////////////////
 
 class BorderShape extends Shape {
     constructor() {
@@ -412,7 +509,43 @@ export class BruinSmoothies extends Scene {
             shape_mtx = shape_mtx
                 .times(Mat4.translation(new_x, new_y, 0))
                 .times(Mat4.scale(ingredient.radius, ingredient.radius, ingredient.radius));
+
+            if (ingredient instanceof Watermelon) {
+                shape_mtx = shape_mtx.times(Mat4.scale(1.3, 1.5, 1.3));
+            }
+
+            let shape_mtx_non_rotate = shape_mtx;
+            if (ingredient instanceof Apple) {
+                shape_mtx = shape_mtx.times(Mat4.scale(1.5, 1.175, 1.5)).times(Mat4.rotation(Math.PI / 2,0,1,0));
+            }
+
             ingredient.shape.draw(context, program_state, shape_mtx, ingredient.material);
+
+            if (ingredient.shape2 !== null){
+                // below line proves Orange enters here
+                // ingredient.shape.draw(context, program_state, shape_mtx.times(Mat4.scale(3,3,3)), ingredient.material);
+                let leaf_transform = shape_mtx_non_rotate;
+                let leaf_offset = Mat4.identity();
+                if(ingredient instanceof Apple){
+                    leaf_offset = Mat4.translation(0, .25, 0).times(Mat4.rotation(Math.PI / 2, 0, 0, 1));
+                    leaf_transform = leaf_transform.times(leaf_offset).times(Mat4.scale(.8,.8, .8));
+                }else{
+                    // orange
+                    leaf_offset = Mat4.translation(0, .8, 0).times(Mat4.rotation(Math.PI / 3, 0, 0, 1));
+                    leaf_transform = leaf_transform.times(leaf_offset).times(Mat4.scale(.8,.8, .8));
+                }
+
+                ingredient.shape2.draw(context, program_state, leaf_transform, ingredient.material2);
+            }
+
+            if (ingredient.shape3 !== null){
+                // below line proves Orange enters here
+                // ingredient.shape.draw(context, program_state, shape_mtx.times(Mat4.scale(3,3,3)), ingredient.material);
+                let stem_transform = shape_mtx_non_rotate.times(Mat4.translation(-.5, .22, 0)).times(Mat4.scale(.1,1, .8));
+
+                ingredient.shape3.draw(context, program_state, stem_transform, ingredient.material3);
+            }
+
             ingredient.center[0] = new_x;
             ingredient.center[1] = new_y;
         }
