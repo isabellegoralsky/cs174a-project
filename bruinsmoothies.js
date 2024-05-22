@@ -14,25 +14,86 @@ class Ingredient {
     }
 }
 
+////////////////////////////// WATERMELON //////////////////////////////
+
+// TODO make oval
 class Watermelon extends Ingredient {
   constructor(x_pos, y_pos, x_spd, y_spd) {
-      const mat = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0.2, color: hex_color("#5ab669")});
+      const mat = new Material(new Watermelon_Shader(), {ambient: 1, diffusivity: 0.2, specularity: .8, color: hex_color("#5ab669")});
       const shp = new defs.Subdivision_Sphere(4);
       super(x_pos, y_pos, x_spd, y_spd, 1, shp, mat);
   }
 }
 
+class Watermelon_Shader extends Shader {
+    update_GPU(context, gpu_addresses, graphics_state, model_transform, material) {
+        // update_GPU():  Defining how to synchronize our JavaScript's variables to the GPU's:
+        const [P, C, M] = [graphics_state.projection_transform, graphics_state.camera_inverse, model_transform],
+            PCM = P.times(C).times(M);
+        context.uniformMatrix4fv(gpu_addresses.model_transform, false, Matrix.flatten_2D_to_1D(model_transform.transposed()));
+        context.uniformMatrix4fv(gpu_addresses.projection_camera_model_transform, false,
+            Matrix.flatten_2D_to_1D(PCM.transposed()));
+    }
+
+    shared_glsl_code() {
+        // ********* SHARED CODE, INCLUDED IN BOTH SHADERS *********
+        return `
+        precision mediump float;
+        varying vec4 point_position;
+        varying vec4 center;
+        varying vec2 v_texture_coord;
+        `;
+    }
+
+    vertex_glsl_code() {
+        // ********* VERTEX SHADER *********
+        return this.shared_glsl_code() + `
+        attribute vec3 position;
+        attribute vec2 texture_coord;
+        uniform mat4 model_transform;
+        uniform mat4 projection_camera_model_transform;
+        
+        void main(){
+            point_position = model_transform* vec4(position, 1); // vec4(origin (position), 1) to convert pos to vec4
+            center = model_transform* vec4(0, 0, 0, 1);
+            v_texture_coord = texture_coord;
+      
+            gl_Position = projection_camera_model_transform* vec4(position, 1); 
+        }`;
+    }
+
+    fragment_glsl_code() {
+        // ********* FRAGMENT SHADER *********
+        // TODO possibly change green shades
+        return this.shared_glsl_code() + `
+        void main(){
+            // percent opacities of red green blue
+            vec4 light_green = vec4(0.2980, 0.6863, 0.3137, 1.0);  // #4CAF50
+            vec4 dark_green = vec4(0.1804, 0.4902, 0.1961, 1.0);   // #2E7D32
+            
+            float stripe = sin(55.0 * v_texture_coord.x);  // Adjust frequency as needed
+            vec4 color = mix(light_green, dark_green, step(0.0, stripe));
+            
+            gl_FragColor = color;
+        }`;
+    }
+}
+
+////////////////////////////// APPLE //////////////////////////////
+
 class Apple extends Ingredient {
   constructor(x_pos, y_pos, x_spd, y_spd) {
-      const mat = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0.2, color: hex_color("#cc2525")});
+      const mat = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: .9, color: hex_color("#ff0800")});
       const shp = new defs.Subdivision_Sphere(4);
-      super(x_pos, y_pos, x_spd, y_spd, 0.5, shp, mat);
+      super(x_pos, y_pos, x_spd, y_spd, .5, shp, mat);
   }
 }
 
+////////////////////////////// ORANGE //////////////////////////////
+
 class Orange extends Ingredient {
   constructor(x_pos, y_pos, x_spd, y_spd) {
-      const mat = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0.2, color: hex_color("#f68f24")});
+      const mat = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0.3, color: hex_color("#ff8100")});
       const shp = new defs.Subdivision_Sphere(4);
       super(x_pos, y_pos, x_spd, y_spd, 0.5, shp, mat);
   }
@@ -41,6 +102,8 @@ class Orange extends Ingredient {
 // other fruit shapes? berry banana etc
 // sprite images somehow?? textures? (assn 4?)
 // if we do bananas, we could make them rotate/spin too for fun?
+
+////////////////////////////// BANANA //////////////////////////////
 
 const BananaShape = defs.BananaShape = class BananaShape extends Shape {
     constructor() {
