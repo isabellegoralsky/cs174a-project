@@ -1,7 +1,9 @@
 import {defs, tiny} from './examples/common.js';
-
+import {custom_shapes} from './assets/shapes.js';
+import {custom_shaders} from './assets/shaders.js';
+import {custom_scenes} from './assets/scenes.js';
 const {
-    Vector, Vector3, vec, vec3, vec4, color, hex_color, Shader, Matrix, Mat4, Light, Shape, Material, Scene,
+    Vector, Vector3, vec, vec3, vec4, color, hex_color, Shader, Matrix, Mat4, Light, Shape, Material, Scene
 } = tiny;
 
 class Ingredient {
@@ -20,153 +22,18 @@ class Ingredient {
     }
 }
 
-////////////////////////////// WATERMELON //////////////////////////////
-
 class Watermelon extends Ingredient {
   constructor(x_pos, y_pos, x_spd, y_spd) {
       const shp = new defs.Subdivision_Sphere(4);
-      const mat = new Material(new Watermelon_Shader(), {ambient: 1, diffusivity: 0.2, specularity: .8, color: hex_color("#5ab669")});
+      const mat = new Material(new custom_shaders.WatermelonShader(), {ambient: 1, diffusivity: 0.2, specularity: 1, color: hex_color("#5ab669")});
 
-      super(x_pos, y_pos, x_spd, y_spd, 1, 3, shp, mat);
+      super(x_pos, y_pos, x_spd, y_spd, 1.3, 3, shp, mat);
   }
-}
-
-class Watermelon_Shader extends Shader {
-    update_GPU(context, gpu_addresses, graphics_state, model_transform, material) {
-        // update_GPU():  Defining how to synchronize our JavaScript's variables to the GPU's:
-        const [P, C, M] = [graphics_state.projection_transform, graphics_state.camera_inverse, model_transform],
-            PCM = P.times(C).times(M);
-        context.uniformMatrix4fv(gpu_addresses.model_transform, false, Matrix.flatten_2D_to_1D(model_transform.transposed()));
-        context.uniformMatrix4fv(gpu_addresses.projection_camera_model_transform, false,
-            Matrix.flatten_2D_to_1D(PCM.transposed()));
-    }
-
-    shared_glsl_code() {
-        // ********* SHARED CODE, INCLUDED IN BOTH SHADERS *********
-        return `
-        precision mediump float;
-        varying vec4 point_position;
-        varying vec4 center;
-        varying vec2 v_texture_coord;
-        `;
-    }
-
-    vertex_glsl_code() {
-        // ********* VERTEX SHADER *********
-        return this.shared_glsl_code() + `
-        attribute vec3 position;
-        attribute vec2 texture_coord;
-        uniform mat4 model_transform;
-        uniform mat4 projection_camera_model_transform;
-        
-        void main(){
-            point_position = model_transform* vec4(position, 1); // vec4(origin (position), 1) to convert pos to vec4
-            center = model_transform* vec4(0, 0, 0, 1);
-            v_texture_coord = texture_coord;
-      
-            gl_Position = projection_camera_model_transform* vec4(position, 1); 
-        }`;
-    }
-
-    fragment_glsl_code() {
-        // ********* FRAGMENT SHADER *********
-        // TODO possibly change green shades
-        return this.shared_glsl_code() + `
-        void main(){
-            // percent opacities of red green blue
-            vec4 light_green = vec4(0.2980, 0.6863, 0.3137, 1.0);  // #4CAF50
-            vec4 dark_green = vec4(0.1804, 0.4902, 0.1961, 1.0);   // #2E7D32
-            
-            float stripe = sin(55.0 * v_texture_coord.x);  // Adjust frequency as needed
-            vec4 color = mix(light_green, dark_green, step(0.0, stripe));
-            
-            gl_FragColor = color;
-        }`;
-    }
-}
-
-////////////////////////////// APPLE //////////////////////////////
-
-const HalfApple = defs.HalfApple = class HalfApple extends Shape {
-    constructor() {
-        super("position", "normal", "texture_coord");
-
-        const numSegments = 20; // Number of segments for smoothness
-        const radius = 0.5; // Radius of the apple
-        const height = 1.0; // Height of the apple
-
-        for (let i = 0; i <= numSegments; i++) {
-            const theta = i * Math.PI / numSegments; // Angle for height segments
-
-            for (let j = 0; j <= numSegments; j++) {
-                const phi = j * 2 * Math.PI / numSegments; // Angle for circular segments
-
-                // Calculate the x, y, z positions of the vertices
-                const x = radius * Math.sin(theta) * Math.cos(phi);
-                const y = height * (Math.cos(theta) - 0.5); // Adjusted to look more like an apple
-                const z = radius * Math.sin(theta) * Math.sin(phi);
-
-                // Push the position
-                this.arrays.position.push(vec3(x, y, z));
-
-                // Calculate and push the normal
-                const normal = vec3(x, y, z).normalized();
-                this.arrays.normal.push(normal);
-
-                // Push the texture coordinate
-                this.arrays.texture_coord.push(vec(j / numSegments, i / numSegments));
-            }
-        }
-
-        // Create the indices for the apple shape
-        for (let i = 0; i < numSegments; i++) {
-            for (let j = 0; j < numSegments; j++) {
-                const first = i * (numSegments + 1) + j;
-                const second = first + numSegments + 1;
-
-                this.indices.push(first, second, first + 1);
-                this.indices.push(second, second + 1, first + 1);
-            }
-        }
-    }
-}
-
-const AppleShape = defs.AppleShape = class AppleShape extends Shape {
-    constructor() {
-        super("position", "normal", "texture_coord");
-
-        const halfApple1 = new defs.HalfApple();
-        const halfApple2 = new defs.HalfApple();
-
-        // Offset the second half to form the complete apple
-        const offset = Mat4.translation(0, 0, -0.5);
-
-        // Merge the first half apple vertices
-        this.arrays.position.push(...halfApple1.arrays.position);
-        this.arrays.normal.push(...halfApple1.arrays.normal);
-        this.arrays.texture_coord.push(...halfApple1.arrays.texture_coord);
-
-        // Merge the second half apple vertices
-        for (let i = 0; i < halfApple2.arrays.position.length; i++) {
-            const pos = halfApple2.arrays.position[i];
-            const transformedPos = offset.times(pos.to4(1)).to3();
-            this.arrays.position.push(transformedPos);
-            this.arrays.normal.push(halfApple2.arrays.normal[i]);
-            this.arrays.texture_coord.push(halfApple2.arrays.texture_coord[i]);
-        }
-
-        // Merge the indices
-        const len = halfApple1.arrays.position.length;
-        this.indices.push(...halfApple1.indices);
-        for (let i = 0; i < halfApple2.indices.length; i++) {
-            this.indices.push(halfApple2.indices[i] + len);
-        }
-    }
 }
 
 class Apple extends Ingredient {
   constructor(x_pos, y_pos, x_spd, y_spd) {
-      const shp = new defs.AppleShape();
+      const shp = new custom_shapes.AppleShape();
       const mat = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: .9, color: hex_color("#ff0800")});
 
       // leaf
@@ -180,8 +47,6 @@ class Apple extends Ingredient {
       super(x_pos, y_pos, x_spd, y_spd, .5, 1, shp, mat, shp2, mat2, shp3, mat3);
   }
 }
-
-////////////////////////////// ORANGE //////////////////////////////
 
 class Orange extends Ingredient {
   constructor(x_pos, y_pos, x_spd, y_spd) {
@@ -197,51 +62,10 @@ class Orange extends Ingredient {
   }
 }
 
-////////////////////////////// BANANA //////////////////////////////
-
-const BananaShape = defs.BananaShape = class BananaShape extends Shape {
-    constructor() {
-        super("position", "normal", "texture_coord");
-        const segments = 50; // More segments for smoother curves
-        const radius = 0.4; // Thickness of the banana
-        const length = 4.0; // Length of the banana
-        const curve_radius = 2.0; // Radius of the curve of the banana
-
-        // Create the banana shape using cylindrical segments around the curve
-        for (let i = 0; i <= segments; i++) {
-            const angle = Math.PI / segments * i;
-            const x = curve_radius * Math.sin(angle);
-            const y = length / segments * i - length / 2;
-            const z = curve_radius * Math.cos(angle) - curve_radius;
-
-            // Create circular segments along the banana
-            for (let j = 0; j <= segments; j++) {
-                const theta = 2 * Math.PI / segments * j;
-                const nx = radius * Math.cos(theta);
-                const nz = radius * Math.sin(theta);
-                this.arrays.position.push(vec3(x + nx, y, z + nz));
-                this.arrays.normal.push(vec3(nx, 0, nz).normalized());
-                this.arrays.texture_coord.push(vec(i / segments, j / segments));
-            }
-        }
-
-        // Create indices for the triangular segments
-        for (let i = 0; i < segments; i++) {
-            for (let j = 0; j < segments; j++) {
-                const first = i * (segments + 1) + j;
-                const second = first + segments + 1;
-                this.indices.push(first, second, first + 1);
-                this.indices.push(second, second + 1, first + 1);
-            }
-        }
-
-    }
-}
-
 // Banana looks a little weird in 3D, need to move camera angle so it looks normal
 class Banana extends Ingredient {
     constructor(x_pos, y_pos, x_spd, y_spd) {
-        const shp = new defs.BananaShape();
+        const shp = new custom_shapes.BananaShape();
         const mat = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0.2, color: hex_color("#fdd835")});
 
         super(x_pos, y_pos, x_spd, y_spd, 0.6, 2, shp, mat);
@@ -259,88 +83,6 @@ class Banana extends Ingredient {
     }
 }
 
-// berries? spinning?
-
-////////////////////////////////// BORDER ////////////////////////////////////
-
-class BorderShape extends Shape {
-    constructor() {
-        super("position", "color");
-        const border_color = color(0.75, 0, 0.25, 1);
-        const thickness = 0.2;
-        const width = 36;
-        const height = 20;
-        this.arrays.position = [
-            // Bottom border
-            vec3(-width / 2 - thickness, -height / 2 - thickness, 0), vec3(width / 2 + thickness, -height / 2 - thickness, 0),
-            vec3(width / 2 + thickness, -height / 2, 0), vec3(-width / 2 - thickness, -height / 2, 0),
-
-            // Top border
-            vec3(-width / 2 - thickness, height / 2, 0), vec3(width / 2 + thickness, height / 2, 0),
-            vec3(width / 2 + thickness, height / 2 + thickness, 0), vec3(-width / 2 - thickness, height / 2 + thickness, 0),
-
-            // Left border
-            vec3(-width / 2 - thickness, -height / 2 - thickness, 0), vec3(-width / 2, -height / 2 - thickness, 0),
-            vec3(-width / 2, height / 2 + thickness, 0), vec3(-width / 2 - thickness, height / 2 + thickness, 0),
-
-            // Right border
-            vec3(width / 2, -height / 2 - thickness, 0), vec3(width / 2 + thickness, -height / 2 - thickness, 0),
-            vec3(width / 2 + thickness, height / 2 + thickness, 0), vec3(width / 2, height / 2 + thickness, 0),
-        ];
-        this.arrays.color = [
-            border_color, border_color, border_color, border_color,
-            border_color, border_color, border_color, border_color,
-            border_color, border_color, border_color, border_color,
-            border_color, border_color, border_color, border_color
-        ];
-        this.indices.push(0, 1, 2, 0, 2, 3); // Bottom border
-        this.indices.push(4, 5, 6, 4, 6, 7); // Top border
-        this.indices.push(8, 9, 10, 8, 10, 11); // Left border
-        this.indices.push(12, 13, 14, 12, 14, 15); // Right border
-    }
-}
-
-// detecting mouse clicks
-// check if the mouse ray intersects with any ingredient
-class MouseControls extends Scene {
-    constructor(bruin_smoothies) {
-        super();
-        this.bruin_smoothies = bruin_smoothies;
-        this.mouse_enabled_canvases = new Set();
-    }
-
-    add_mouse_controls(canvas) {
-        const mouse_position = (e, rect = canvas.getBoundingClientRect()) =>
-            vec(e.clientX - (rect.left + rect.right) / 2, e.clientY - (rect.bottom + rect.top) / 2);
-
-        canvas.addEventListener("mousedown", e => {
-            e.preventDefault();
-            this.handle_click(e, canvas);
-        });
-    }
-
-    handle_click(event, canvas) {
-        const rect = canvas.getBoundingClientRect();
-        const x = event.clientX - rect.left;
-        const y = event.clientY - rect.top;
-
-        const world_space = vec3(
-            (x / rect.width) * this.bruin_smoothies.width - this.bruin_smoothies.width / 2,
-            this.bruin_smoothies.height / 2 - (y / rect.height) * this.bruin_smoothies.height,
-            0
-        );
-
-        this.bruin_smoothies.check_ingredient_click(world_space);
-    }
-
-    display(context, graphics_state) {
-        if (!this.mouse_enabled_canvases.has(context.canvas)) {
-            this.add_mouse_controls(context.canvas);
-            this.mouse_enabled_canvases.add(context.canvas);
-        }
-    }
-}
-
 export class BruinSmoothies extends Scene {
     constructor() {
         super();
@@ -349,7 +91,7 @@ export class BruinSmoothies extends Scene {
         this.width = 36;
         this.height = 20;
 
-        this.border_shape = new BorderShape();
+        this.border_shape = new custom_shapes.BorderShape();
         this.border_material = new Material(new defs.Basic_Shader(), {color: color(1, 1, 1, 1)});
 
         this.valid_ingredients = ["Watermelon", "Apple", "Orange", "Banana"];
@@ -362,9 +104,8 @@ export class BruinSmoothies extends Scene {
 
         [this.recipe, this.ingredients] = this.setup_level();
 
-        // Player score
         this.score = 0;
-        this.click_controls = new MouseControls(this);
+        this.click_controls = new custom_scenes.MouseControls(this);
     }
 
     check_ingredient_click(world_space) {
@@ -378,18 +119,19 @@ export class BruinSmoothies extends Scene {
             if (distance < ingredient.radius) {
                 this.score += 1;
                 this.ingredients.splice(i, 1);
-                this.play_sound();
+                this.play_sound('sounds/juicy-splash.mp3');
                 break;
             }
         }
     }
 
-    play_sound() {
-        const audio = new Audio('mp3-sounds/juicy-splash.mp3');
+    play_sound(path) {
+        const audio = new Audio(path);
         audio.play();
     }
 
-    random_number(min=0, max=1, int=false) { // inclusive, int for integers only
+    // inclusive, int flag for integers only
+    random_number(min=0, max=1, int=false) {
         let num = Math.random() * (max-min) + min;
         num = int ? Math.round(num) : num;
         return num;
@@ -418,21 +160,27 @@ export class BruinSmoothies extends Scene {
     }
 
     setup_level() {
-        const total_ingr_count = 8;
+        const margin = 0.5; // avoid spawn on border
         const ingredient_list = [];
-        const recipe = {}; // pick from set options?
-        const margin = 0.5; // Margin to avoid spawning on the border
-        const recipe_ingr_count = 0; // get from recipe size
+        const total_ingr_count = 10;
+
+        const recipes = {};
+        // randomly select a recipe
+        const recipe_ingr_count = 0; // get from size of chosen recipe
+        // add chosen recipe's ingredients
+
         const other_ingr_count = total_ingr_count - recipe_ingr_count;
         for (let i = 0; i < other_ingr_count; i++) { // generate random other ingredients
-            const ingredient_type = this.valid_ingredients[this.random_number(0, this.valid_ingredients.length-1, true)];
-            const radius = ingredient_type === "Watermelon" ? 1 : 0.5; // Define radius based on ingredient type
+            const ingredient_str = this.valid_ingredients[this.random_number(0, this.valid_ingredients.length-1, true)];
+            const ingredient_type = this.ingredient_mapping[ingredient_str];
+            const radius = ingredient_type === Watermelon ? 1 : 0.5; // Define radius based on ingredient type
             const [init_x, init_y] = this.generate_valid_position(ingredient_list, radius, margin);
             const init_x_spd = this.random_number(-0.05, 0.05);
             const init_y_spd = this.random_number(-0.05, 0.05);
-            ingredient_list.push(new this.ingredient_mapping[ingredient_type](init_x, init_y, init_x_spd, init_y_spd));
+            ingredient_list.push(new ingredient_type(init_x, init_y, init_x_spd, init_y_spd));
         }
-        return [recipe, ingredient_list];
+
+        return [recipes, ingredient_list];
     }
 
     check_wall_collision(ingredient) {
@@ -440,7 +188,7 @@ export class BruinSmoothies extends Scene {
         const half_height = this.height / 2;
 
         if (ingredient.center[0]-ingredient.radius <= -half_width || ingredient.center[0]+ingredient.radius >= half_width) {
-            ingredient.direction[0] *= -1; // could easily speed up with > |1| if desired
+            ingredient.direction[0] *= -1;
         }
 
         if (ingredient.center[1]-ingredient.radius <= -half_height || ingredient.center[1]+ingredient.radius >= half_height) {
@@ -448,7 +196,6 @@ export class BruinSmoothies extends Scene {
         }
     }
 
-    // check for collisions with each other (n^2 overlap? z-buffer?) --> update direction vector
     check_ingredient_collision(ingredient1, ingredient2) {
         const x_dist = ingredient1.center[0] - ingredient2.center[0];
         const y_dist = ingredient1.center[1] - ingredient2.center[1];
@@ -489,19 +236,22 @@ export class BruinSmoothies extends Scene {
     }
 
     display(context, program_state) {
+        // set up initial stuff
         if (!context.scratchpad.controls) {
             this.children.push(context.scratchpad.controls = new defs.Movement_Controls());
             program_state.set_camera(this.initial_camera_location);
-
         }
+
         program_state.projection_transform = Mat4.perspective(Math.PI / 4, context.width / context.height, .1, 1000);
         program_state.lights = [new Light(vec4(0, 0, 1000, 1), color(1, 1, 1, 1), 10000000)];
-        const model_transform = Mat4.identity();
 
         this.draw_border(context, program_state);
 
-        // Check for collisions between ingredients
+        const model_transform = Mat4.identity();
+
+        // check for collisions
         for (let i = 0; i < this.ingredients.length; i++) {
+            this.check_wall_collision(this.ingredients[i]);
             for (let j = i + 1; j < this.ingredients.length; j++) {
                 this.check_ingredient_collision(this.ingredients[i], this.ingredients[j]);
             }
@@ -509,23 +259,23 @@ export class BruinSmoothies extends Scene {
 
         // draw each ingredient
         for (let ingredient of this.ingredients) {
-            this.check_wall_collision(ingredient);
             let shape_mtx = model_transform;
             let new_x = ingredient.center[0]+ingredient.direction[0];
             let new_y = ingredient.center[1]+ingredient.direction[1];
-            // not using z?
-            // things look a little skewed in the corners, maybe move the camera back? might get fixed by framing game fully?
             shape_mtx = shape_mtx
                 .times(Mat4.translation(new_x, new_y, 0))
                 .times(Mat4.scale(ingredient.radius, ingredient.radius, ingredient.radius));
 
             if (ingredient instanceof Watermelon) {
-                shape_mtx = shape_mtx.times(Mat4.scale(1.3, 1.5, 1.3));
+                shape_mtx = shape_mtx
+                    .times(Mat4.scale(1, 1.15, 1)); // make watermelon oval
             }
 
             let shape_mtx_non_rotate = shape_mtx;
             if (ingredient instanceof Apple) {
-                shape_mtx = shape_mtx.times(Mat4.scale(1.5, 1.175, 1.5)).times(Mat4.rotation(Math.PI / 2,0,1,0));
+                shape_mtx = shape_mtx
+                    .times(Mat4.scale(1.5, 1.175, 1.5))
+                    .times(Mat4.rotation(Math.PI / 2,0,1,0));
             }
 
             ingredient.shape.draw(context, program_state, shape_mtx, ingredient.material);
