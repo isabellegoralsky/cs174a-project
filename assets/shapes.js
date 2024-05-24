@@ -197,8 +197,8 @@ const BorderShape = custom_shapes.BorderShape = class BorderShape extends Shape 
         super("position", "color");
         const border_color = color(0.75, 0, 0.25, 1);
         const thickness = 0.2;
-        const width = 36.25;
-        const height = 20;
+        const width = 36.8;
+        const height = 20.3;
         this.arrays.position = [
             // Bottom border
             vec3(-width / 2 - thickness, -height / 2 - thickness, 0), vec3(width / 2 + thickness, -height / 2 - thickness, 0),
