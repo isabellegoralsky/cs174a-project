@@ -24,10 +24,17 @@ class Ingredient {
 
 class Watermelon extends Ingredient {
   constructor(x_pos, y_pos, x_spd, y_spd) {
-      const shp = new defs.Subdivision_Sphere(4);
-      const mat = new Material(new custom_shaders.WatermelonShader(), {ambient: 1, diffusivity: 0.2, specularity: 1, color: hex_color("#5ab669")});
+      //const shp = new defs.Subdivision_Sphere(4);
+      const shp = new custom_shapes.HalfCircle();
+      const mat = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: .1, color: hex_color("#207c25")});
 
-      super(x_pos, y_pos, x_spd, y_spd, 1.3, 3, shp, mat);
+      const shp2 = new custom_shapes.HalfCircle();
+      const mat2 = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0, color: hex_color("#dc2c40")});
+
+      const shp3 = new custom_shapes.Circle();
+      const mat3 = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0, specularity: 0, color: hex_color("#000000")})
+
+      super(x_pos, y_pos, x_spd, y_spd, 1.3, 3, shp, mat, shp2, mat2, shp3, mat3);
   }
 }
 
@@ -271,7 +278,8 @@ export class BruinSmoothies extends Scene {
 
             if (ingredient instanceof Watermelon) {
                 shape_mtx = shape_mtx
-                    .times(Mat4.scale(1, 1.15, 1)); // make watermelon oval
+                    .times(Mat4.scale(1.5,1.5,1.5))
+                    .times(Mat4.rotation(135, 0,0,1));
             }
 
             let shape_mtx_non_rotate = shape_mtx;
@@ -291,21 +299,38 @@ export class BruinSmoothies extends Scene {
                 if(ingredient instanceof Apple){
                     leaf_offset = Mat4.translation(0, .25, 0).times(Mat4.rotation(Math.PI / 2, 0, 0, 1));
                     leaf_transform = leaf_transform.times(leaf_offset).times(Mat4.scale(.8,.8, .8));
-                }else{
+                }else if (ingredient instanceof Orange){
                     // orange
                     leaf_offset = Mat4.translation(0, .8, 0).times(Mat4.rotation(Math.PI / 3, 0, 0, 1));
                     leaf_transform = leaf_transform.times(leaf_offset).times(Mat4.scale(.8,.8, .8));
+                }else{
+                    // watermelon
+                    leaf_transform = leaf_transform.times(Mat4.scale(.9,.9, 1)).times(Mat4.translation(0,0,.0001));
                 }
 
                 ingredient.shape2.draw(context, program_state, leaf_transform, ingredient.material2);
             }
 
             if (ingredient.shape3 !== null){
-                // below line proves Orange enters here
-                // ingredient.shape.draw(context, program_state, shape_mtx.times(Mat4.scale(3,3,3)), ingredient.material);
-                let stem_transform = shape_mtx_non_rotate.times(Mat4.translation(-.5, .22, 0)).times(Mat4.scale(.1,1, .8));
+                let shp3_transform = shape_mtx_non_rotate;
+                if(ingredient instanceof Apple) {
+                    // apple stem
+                    shp3_transform = shp3_transform.times(Mat4.translation(-.5, .22, 0)).times(Mat4.scale(.1,1, .8));
+                    ingredient.shape3.draw(context, program_state, shp3_transform, ingredient.material3);
+                }else{
+                    // watermelon seeds
+                    //top 3
+                    shp3_transform = shp3_transform.times(Mat4.scale(.04,.065, 1)).times(Mat4.translation(0,0,.0002));
+                    ingredient.shape3.draw(context, program_state, shp3_transform.times(Mat4.translation(-5,5,0)), ingredient.material3);
+                    ingredient.shape3.draw(context, program_state, shp3_transform.times(Mat4.translation(5,5,0)), ingredient.material3);
+                    ingredient.shape3.draw(context, program_state, shp3_transform.times(Mat4.translation(0, 6, 0)), ingredient.material3);
 
-                ingredient.shape3.draw(context, program_state, stem_transform, ingredient.material3);
+                    // bottom 4
+                    ingredient.shape3.draw(context, program_state, shp3_transform.times(Mat4.translation(-9,8,0)), ingredient.material3);
+                    ingredient.shape3.draw(context, program_state, shp3_transform.times(Mat4.translation(9,8,0)), ingredient.material3);
+                    ingredient.shape3.draw(context, program_state, shp3_transform.times(Mat4.translation(-3, 9.5, 0)), ingredient.material3);
+                    ingredient.shape3.draw(context, program_state, shp3_transform.times(Mat4.translation(3, 9.5, 0)), ingredient.material3);
+                }
             }
 
             ingredient.center[0] = new_x;
