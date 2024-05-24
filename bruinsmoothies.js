@@ -7,7 +7,7 @@ const {
 } = tiny;
 
 class Ingredient {
-    constructor(x_pos, y_pos, x_spd, y_spd, rad, mas, 
+    constructor(x_pos, y_pos, x_spd, y_spd, rad, mas,
                 shp, mat, shp2=null, mat2=null, shp3=null, mat3=null) {
         this.center = vec3(x_pos, y_pos, 0);
         this.direction = vec3(x_spd, y_spd, 0);
@@ -87,7 +87,7 @@ export class BruinSmoothies extends Scene {
     constructor() {
         super();
 
-        this.initial_camera_location = Mat4.look_at(vec3(0, 0, 25), vec3(0, 0, 0), vec3(0, 1, 0));
+        this.initial_camera_location = Mat4.look_at(vec3(0, 0, 24.6), vec3(0, 0, 0), vec3(0, 1, 0));
         this.width = 36;
         this.height = 20;
 
@@ -202,6 +202,9 @@ export class BruinSmoothies extends Scene {
         const dist = Math.sqrt(x_dist*x_dist + y_dist*y_dist);
 
         if (dist < ingredient1.radius + ingredient2.radius) {
+
+            this.play_sound('sounds/ding.mp3');
+
             const normalX = x_dist / dist;
             const normalY = y_dist / dist;
 

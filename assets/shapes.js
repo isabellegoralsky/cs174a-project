@@ -126,7 +126,7 @@ const BorderShape = custom_shapes.BorderShape = class BorderShape extends Shape 
         super("position", "color");
         const border_color = color(0.75, 0, 0.25, 1);
         const thickness = 0.2;
-        const width = 36;
+        const width = 36.25;
         const height = 20;
         this.arrays.position = [
             // Bottom border
