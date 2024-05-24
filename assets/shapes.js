@@ -5,6 +5,77 @@ const {
 
 export const custom_shapes = {};
 
+const Circle = custom_shapes.Circle =
+    class Circle extends Shape {
+        // **FullCircle** A 2D Circle Shape with a given number of segments.
+        constructor(num_segments = 30) {
+            super("position", "normal", "texture_coord");
+
+            // Calculate the angle between each segment
+            const angle_step = 2 * Math.PI / num_segments;
+
+            // Center vertex
+            this.arrays.position.push(vec3(0, 0, 0));
+            this.arrays.normal.push(vec3(0, 0, 1));
+            this.arrays.texture_coord.push(vec(0.5, 0.5));
+
+            // Vertices around the circumference of the circle
+            for (let i = 0; i <= num_segments; i++) {
+                const angle = i * angle_step;
+                const x = Math.cos(angle);
+                const y = Math.sin(angle);
+
+                this.arrays.position.push(vec3(x, y, 0));
+                this.arrays.normal.push(vec3(0, 0, 1));
+                this.arrays.texture_coord.push(vec(0.5 + 0.5 * x, 0.5 + 0.5 * y));
+
+                if (i > 0) {
+                    this.indices.push(0, i, i + 1);
+                }
+            }
+
+            // Connect the last vertex back to the first circumference vertex to close the circle
+            this.indices.push(0, num_segments, 1);
+        }}
+
+const HalfCircle = custom_shapes.HalfCircle =
+    class HalfCircle extends Shape {
+        // **HalfCircle** A 2D Half Circle Shape with a given number of segments.
+        constructor(num_segments = 30) {
+            super("position", "normal", "texture_coord");
+
+            // Calculate the angle between each segment
+            const angle_step = Math.PI / num_segments;
+
+            // Center vertex
+            this.arrays.position.push(vec3(0, 0, 0));
+            this.arrays.normal.push(vec3(0, 0, 1));
+            this.arrays.texture_coord.push(vec(0.5, 0.5));
+
+            // Vertices around the circumference of the half circle
+            for (let i = 0; i <= num_segments; i++) {
+                const angle = i * angle_step;
+                const x = Math.cos(angle);
+                const y = Math.sin(angle);
+
+                this.arrays.position.push(vec3(x, y, 0));
+                this.arrays.normal.push(vec3(0, 0, 1));
+                this.arrays.texture_coord.push(vec(0.5 + 0.5 * x, 0.5 + 0.5 * y));
+
+                if (i > 0) {
+                    this.indices.push(0, i, i + 1);
+                }
+            }
+
+            // Close the half circle by connecting the last vertex to the edge vertex at -1 in the x-axis
+            this.arrays.position.push(vec3(-1, 0, 0));
+            this.arrays.normal.push(vec3(0, 0, 1));
+            this.arrays.texture_coord.push(vec(0, 0.5));
+            this.indices.push(0, num_segments + 1, 1);
+        }
+    }
+
+
 const HalfApple = custom_shapes.HalfApple = class HalfApple extends Shape {
     constructor() {
         super("position", "normal", "texture_coord");
