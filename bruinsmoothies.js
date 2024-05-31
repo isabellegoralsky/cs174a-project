@@ -43,9 +43,11 @@ class Apple extends Ingredient {
         const shp = new custom_shapes.AppleShape();
         const mat = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: .9, color: hex_color("#ff0800")});
 
+        // leaf
         const shp2 = new defs.Triangle();
         const mat2 = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0.1, color: hex_color("#1F9A0E")});
 
+        // stem
         const shp3 = new defs.Square();
         const mat3 = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0, color: hex_color("#594A4B")});
 
@@ -58,6 +60,7 @@ class Orange extends Ingredient {
         const shp = new defs.Subdivision_Sphere(4);
         const mat = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0.3, color: hex_color("#ff8100")});
 
+        // leaf
         const shp2 = new defs.Triangle();
         const mat2 = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0.1, color: hex_color("#1F9A0E")});
 
@@ -65,6 +68,7 @@ class Orange extends Ingredient {
     }
 }
 
+// Banana looks a little weird in 3D, need to move camera angle so it looks normal
 class Banana extends Ingredient {
     constructor(x_pos, y_pos, z_pos, x_spd, y_spd, z_spd) {
         const shp = new custom_shapes.BananaShape();
@@ -76,6 +80,7 @@ class Banana extends Ingredient {
     }
 
     draw(context, program_state, model_transform) {
+        // Draw the banana with rotation
         let shape_mtx = model_transform
             .times(Mat4.translation(this.center[0], this.center[1], this.center[2]))
             .times(Mat4.rotation(this.rotation, 1, 0, 0))
@@ -133,12 +138,14 @@ export class BruinSmoothies extends Scene {
         audio.play();
     }
 
+    // inclusive, int flag for integers only
     random_number(min=0, max=1, int=false) {
         let num = Math.random() * (max - min) + min;
         num = int ? Math.round(num) : num;
         return num;
     }
 
+    // avoids ingredients spawning at the same location
     generate_valid_position(existing_ingredients, radius, margin) {
         let is_valid_position = false;
         let x, y, z;
@@ -247,6 +254,7 @@ export class BruinSmoothies extends Scene {
     }
 
     make_control_panel() {
+        // do we need this? maybe for show/hide recipe
         this.key_triggered_button("Put stuff here", ["Control", "0"], () => console.log('test'));
         this.new_line();
         this.key_triggered_button("Score!?", ["Control", "0"], () => console.log('test'));
@@ -298,6 +306,8 @@ export class BruinSmoothies extends Scene {
             ingredient.shape.draw(context, program_state, shape_mtx, ingredient.material);
 
             if (ingredient.shape2 !== null) {
+                // below line proves Orange enters here
+                // ingredient.shape.draw(context, program_state, shape_mtx.times(Mat4.scale(3,3,3)), ingredient.material);
                 let leaf_transform = shape_mtx_non_rotate;
                 let leaf_offset = Mat4.identity();
                 if (ingredient instanceof Apple) {
@@ -316,14 +326,18 @@ export class BruinSmoothies extends Scene {
             if (ingredient.shape3 !== null) {
                 let shp3_transform = shape_mtx_non_rotate;
                 if (ingredient instanceof Apple) {
+                    // apple stem
                     shp3_transform = shp3_transform.times(Mat4.translation(-.5, .22, 0)).times(Mat4.scale(.1, 1, .8));
                     ingredient.shape3.draw(context, program_state, shp3_transform, ingredient.material3);
                 } else {
+                    // watermelon seeds
+                    //top 3
                     shp3_transform = shp3_transform.times(Mat4.scale(.04, .065, 1)).times(Mat4.translation(0, 0, .0002));
                     ingredient.shape3.draw(context, program_state, shp3_transform.times(Mat4.translation(-5, 5, 0)), ingredient.material3);
                     ingredient.shape3.draw(context, program_state, shp3_transform.times(Mat4.translation(5, 5, 0)), ingredient.material3);
                     ingredient.shape3.draw(context, program_state, shp3_transform.times(Mat4.translation(0, 6, 0)), ingredient.material3);
 
+                    // bottom 4
                     ingredient.shape3.draw(context, program_state, shp3_transform.times(Mat4.translation(-9, 8, 0)), ingredient.material3);
                     ingredient.shape3.draw(context, program_state, shp3_transform.times(Mat4.translation(9, 8, 0)), ingredient.material3);
                     ingredient.shape3.draw(context, program_state, shp3_transform.times(Mat4.translation(-3, 9.5, 0)), ingredient.material3);
