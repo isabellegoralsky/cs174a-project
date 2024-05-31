@@ -228,3 +228,96 @@ const BorderShape = custom_shapes.BorderShape = class BorderShape extends Shape 
         this.indices.push(12, 13, 14, 12, 14, 15); // Right border
     }
 }
+
+const BoxShape = custom_shapes.BoxShape = class BoxShape extends Shape {
+    constructor() {
+        super("position", "normal", "texture_coord", "color");
+
+        const light_brown = color(0.54, 0.27, 0.07, 1); // Slightly darker brown color
+        const width = 36.8;
+        const height = 20.3;
+        const thickness = 0.2;
+        const depth = 20.3; // Add depth
+
+        this.arrays.position = [
+            // Front face (Transparent)
+            vec3(-width / 2 - thickness, -height / 2 - thickness, depth / 2), vec3(width / 2 + thickness, -height / 2 - thickness, depth / 2),
+            vec3(width / 2 + thickness, height / 2 + thickness, depth / 2), vec3(-width / 2 - thickness, height / 2 + thickness, depth / 2),
+            // Back face
+            vec3(-width / 2 - thickness, -height / 2 - thickness, -depth / 2), vec3(width / 2 + thickness, -height / 2 - thickness, -depth / 2),
+            vec3(width / 2 + thickness, height / 2 + thickness, -depth / 2), vec3(-width / 2 - thickness, height / 2 + thickness, -depth / 2),
+            // Top face
+            vec3(-width / 2 - thickness, height / 2 + thickness, -depth / 2), vec3(width / 2 + thickness, height / 2 + thickness, -depth / 2),
+            vec3(width / 2 + thickness, height / 2 + thickness, depth / 2), vec3(-width / 2 - thickness, height / 2 + thickness, depth / 2),
+            // Bottom face
+            vec3(-width / 2 - thickness, -height / 2 - thickness, -depth / 2), vec3(width / 2 + thickness, -height / 2 - thickness, -depth / 2),
+            vec3(width / 2 + thickness, -height / 2 - thickness, depth / 2), vec3(-width / 2 - thickness, -height / 2 - thickness, depth / 2),
+            // Right face
+            vec3(width / 2 + thickness, -height / 2 - thickness, -depth / 2), vec3(width / 2 + thickness, height / 2 + thickness, -depth / 2),
+            vec3(width / 2 + thickness, height / 2 + thickness, depth / 2), vec3(width / 2 + thickness, -height / 2 - thickness, depth / 2),
+            // Left face
+            vec3(-width / 2 - thickness, -height / 2 - thickness, -depth / 2), vec3(-width / 2 - thickness, height / 2 + thickness, -depth / 2),
+            vec3(-width / 2 - thickness, height / 2 + thickness, depth / 2), vec3(-width / 2 - thickness, -height / 2 - thickness, depth / 2),
+        ];
+
+        this.arrays.normal = [
+            // Front face (Transparent)
+            vec3(0, 0, 1), vec3(0, 0, 1), vec3(0, 0, 1), vec3(0, 0, 1),
+            // Back face
+            vec3(0, 0, -1), vec3(0, 0, -1), vec3(0, 0, -1), vec3(0, 0, -1),
+            // Top face
+            vec3(0, 1, 0), vec3(0, 1, 0), vec3(0, 1, 0), vec3(0, 1, 0),
+            // Bottom face
+            vec3(0, -1, 0), vec3(0, -1, 0), vec3(0, -1, 0), vec3(0, -1, 0),
+            // Right face
+            vec3(1, 0, 0), vec3(1, 0, 0), vec3(1, 0, 0), vec3(1, 0, 0),
+            // Left face
+            vec3(-1, 0, 0), vec3(-1, 0, 0), vec3(-1, 0, 0), vec3(-1, 0, 0),
+        ];
+
+        this.arrays.texture_coord = [
+            // Front face (Transparent)
+            vec(0, 0), vec(1, 0), vec(1, 1), vec(0, 1),
+            // Back face
+            vec(0, 0), vec(1, 0), vec(1, 1), vec(0, 1),
+            // Top face
+            vec(0, 0), vec(1, 0), vec(1, 1), vec(0, 1),
+            // Bottom face
+            vec(0, 0), vec(1, 0), vec(1, 1), vec(0, 1),
+            // Right face
+            vec(0, 0), vec(1, 0), vec(1, 1), vec(0, 1),
+            // Left face
+            vec(0, 0), vec(1, 0), vec(1, 1), vec(0, 1),
+        ];
+
+        this.arrays.color = [
+            // Front face (Transparent)
+            light_brown, light_brown, light_brown, light_brown,
+            // Back face
+            light_brown, light_brown, light_brown, light_brown,
+            // Top face
+            light_brown, light_brown, light_brown, light_brown,
+            // Bottom face
+            light_brown, light_brown, light_brown, light_brown,
+            // Right face
+            light_brown, light_brown, light_brown, light_brown,
+            // Left face
+            light_brown, light_brown, light_brown, light_brown,
+        ];
+
+        this.indices.push(
+            // Front face (Transparent) - Skip indices to make it transparent
+            //0, 1, 2, 0, 2, 3,
+            // Back face
+            4, 5, 6, 4, 6, 7,
+            // Top face
+            8, 9, 10, 8, 10, 11,
+            // Bottom face
+            12, 13, 14, 12, 14, 15,
+            // Right face
+            16, 17, 18, 16, 18, 19,
+            // Left face
+            20, 21, 22, 20, 22, 23
+        );
+    }
+};
