@@ -88,13 +88,16 @@ export class BruinSmoothies extends Scene {
     constructor() {
         super();
 
-        this.initial_camera_location = Mat4.look_at(vec3(0, 0, 42), vec3(0, 0, 0), vec3(0, 1, 0));
-        this.width = 36.5;
-        this.height = 20;
-        this.depth = 20; // Add depth
+        this.initial_camera_location = Mat4.look_at(vec3(0, 0, 60), vec3(0, 0, 0), vec3(0, 1, 0));
+        this.width = 30;
+        this.height = 15;
+        this.depth = 30;
 
         this.border_shape = new custom_shapes.BoxShape();
         this.border_material = new Material(new defs.Basic_Shader(), {color: color(1, 1, 1, 1)});
+
+        this.floor_shape = new defs.Square();
+        this.floor_material = new Material(new defs.Phong_Shader(), {ambient: 1, color: hex_color("#446a18")});
 
         this.valid_ingredients = ["Watermelon", "Apple", "Orange", "Banana"];
         this.ingredient_mapping = {
@@ -108,29 +111,6 @@ export class BruinSmoothies extends Scene {
 
         this.score = 0;
         this.click_controls = new custom_scenes.MouseControls(this);
-    }
-
-    check_ingredient_click(world_space) {
-        for (let i = 0; i < this.ingredients.length; i++) {
-            const ingredient = this.ingredients[i];
-            const distance = Math.sqrt(
-                Math.pow(world_space[0] - ingredient.center[0], 2) +
-                Math.pow(world_space[1] - ingredient.center[1], 2) +
-                Math.pow(world_space[2] - ingredient.center[2], 2) // Include z-axis
-            );
-
-            if (distance < ingredient.radius) {
-                this.score += 1;
-                this.ingredients.splice(i, 1);
-                this.play_sound('sounds/juicy-splash.mp3');
-                break;
-            }
-        }
-    }
-
-    play_sound(path) {
-        const audio = new Audio(path);
-        audio.play();
     }
 
     random_number(min=0, max=1, int=false) {
@@ -147,13 +127,13 @@ export class BruinSmoothies extends Scene {
             is_valid_position = true;
             x = this.random_number(-this.width / 2 + radius + margin, this.width / 2 - radius - margin);
             y = this.random_number(-this.height / 2 + radius + margin, this.height / 2 - radius - margin);
-            z = this.random_number(-this.depth / 2 + radius + margin, this.depth / 2 - radius - margin); // Add z position
+            z = this.random_number(-this.depth / 2 + radius + margin, this.depth / 2 - radius - margin);
 
             for (let ingr of existing_ingredients) {
                 const distance = Math.sqrt(
                     Math.pow(x - ingr.center[0], 2) +
                     Math.pow(y - ingr.center[1], 2) +
-                    Math.pow(z - ingr.center[2], 2) // Include z-axis
+                    Math.pow(z - ingr.center[2], 2)
                 );
                 if (distance < radius + ingr.radius + margin) {
                     is_valid_position = false;
@@ -172,7 +152,7 @@ export class BruinSmoothies extends Scene {
 
         const recipes = {};
 
-        const recipe_ingr_count = 0;
+        const recipe_ingr_count = 15;
         const other_ingr_count = total_ingr_count - recipe_ingr_count;
         for (let i = 0; i < other_ingr_count; i++) {
             const ingredient_str = this.valid_ingredients[this.random_number(0, this.valid_ingredients.length - 1, true)];
@@ -181,17 +161,30 @@ export class BruinSmoothies extends Scene {
             const [init_x, init_y, init_z] = this.generate_valid_position(ingredient_list, radius, margin);
             const init_x_spd = this.random_number(-0.05, 0.05);
             const init_y_spd = this.random_number(-0.05, 0.05);
-            const init_z_spd = this.random_number(-0.05, 0.05); // Add z speed
+            const init_z_spd = this.random_number(-0.05, 0.05);
             ingredient_list.push(new ingredient_type(init_x, init_y, init_z, init_x_spd, init_y_spd, init_z_spd));
         }
 
         return [recipes, ingredient_list];
     }
 
+    draw_border(context, program_state) {
+        const model_transform = Mat4.identity();
+        this.border_shape.draw(context, program_state, model_transform, this.border_material);
+    }
+
+    draw_floor(context, program_state) {
+        const floor_transform = Mat4.identity()
+            .times(Mat4.translation(0, -this.height / 2 - 0.4, 0))
+            .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
+            .times(Mat4.scale(this.width*1.5, this.depth*1.5, 1));
+        this.floor_shape.draw(context, program_state, floor_transform, this.floor_material);
+    }
+
     check_wall_collision(ingredient) {
         const half_width = this.width / 2;
         const half_height = this.height / 2;
-        const half_depth = this.depth / 2; // Add depth check
+        const half_depth = this.depth / 2;
 
         if (ingredient.center[0] - ingredient.radius <= -half_width || ingredient.center[0] + ingredient.radius >= half_width) {
             ingredient.direction[0] *= -1;
@@ -210,7 +203,7 @@ export class BruinSmoothies extends Scene {
         const x_dist = ingredient1.center[0] - ingredient2.center[0];
         const y_dist = ingredient1.center[1] - ingredient2.center[1];
         const z_dist = ingredient1.center[2] - ingredient2.center[2];
-        const dist = Math.sqrt(x_dist * x_dist + y_dist * y_dist + z_dist * z_dist); // Include z-axis
+        const dist = Math.sqrt(x_dist * x_dist + y_dist * y_dist + z_dist * z_dist);
 
         if (dist < ingredient1.radius + ingredient2.radius) {
 
@@ -241,16 +234,34 @@ export class BruinSmoothies extends Scene {
         }
     }
 
-    draw_border(context, program_state) {
-        const model_transform = Mat4.identity();
-        this.border_shape.draw(context, program_state, model_transform, this.border_material);
-    }
-
     make_control_panel() {
         this.key_triggered_button("Put stuff here", ["Control", "0"], () => console.log('test'));
         this.new_line();
         this.key_triggered_button("Score!?", ["Control", "0"], () => console.log('test'));
         this.new_line();
+    }
+
+    check_ingredient_click(world_space) {
+        for (let i = 0; i < this.ingredients.length; i++) {
+            const ingredient = this.ingredients[i];
+            const distance = Math.sqrt(
+                Math.pow(world_space[0] - ingredient.center[0], 2) +
+                Math.pow(world_space[1] - ingredient.center[1], 2) +
+                Math.pow(world_space[2] - ingredient.center[2], 2)
+            );
+
+            if (distance < ingredient.radius) {
+                this.score += 1;
+                this.ingredients.splice(i, 1);
+                this.play_sound('sounds/juicy-splash.mp3');
+                break;
+            }
+        }
+    }
+
+    play_sound(path) {
+        const audio = new Audio(path);
+        audio.play();
     }
 
     display(context, program_state) {
@@ -263,8 +274,7 @@ export class BruinSmoothies extends Scene {
         program_state.lights = [new Light(vec4(0, 0, 1000, 1), color(1, 1, 1, 1), 10000000)];
 
         this.draw_border(context, program_state);
-
-        const model_transform = Mat4.identity();
+        this.draw_floor(context, program_state);
 
         for (let i = 0; i < this.ingredients.length; i++) {
             this.check_wall_collision(this.ingredients[i]);
@@ -272,6 +282,8 @@ export class BruinSmoothies extends Scene {
                 this.check_ingredient_collision(this.ingredients[i], this.ingredients[j]);
             }
         }
+
+        const model_transform = Mat4.identity();
 
         for (let ingredient of this.ingredients) {
             let shape_mtx = model_transform;

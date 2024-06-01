@@ -4,6 +4,7 @@ Welcome to the fruit stand! Our customers are thirsty, and they want their smoot
 
 ## TDL
 - Visuals
+  - MAKE THE GAME 3D
   - Fruit are skewed/shearing a little as they move from the center, fix that
   - Fix banana model
   - Fix apple specular (double shine is weird?)
@@ -21,7 +22,6 @@ Welcome to the fruit stand! Our customers are thirsty, and they want their smoot
   - Track scores
   - Add level system, with speed ups
 - General
-  - Add sound on collision too?
   - Add more fruits (berries, milk?, peaches, cherries)
     - Peaches and cherries could look similar to apples, cherries smaller + in a pair?
   - Clean/organize code
