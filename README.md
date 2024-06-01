@@ -3,13 +3,13 @@
 Welcome to the fruit stand! Our customers are thirsty, and they want their smoothies now! Unfortunately, we spilled the ingredients everywhere and they're bouncing around. Help us out by clicking the necessary ingredients to fulfill the recipe!
 
 ## TDL
+- Transition to 3D
+  - Revert watermelon to sphere model?
+  - Fix border collisions with banana bc it kinda goes thru rn
 - Visuals
-  - MAKE THE GAME 3D
   - Fruit are skewed/shearing a little as they move from the center, fix that
   - Fix banana model
   - Fix apple specular (double shine is weird?)
-  - Add background image
-  - Fix camera to frame border better
   - Make ingredients spin a little?
 - Gameplay
   - Fix collisions
