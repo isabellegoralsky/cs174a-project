@@ -88,7 +88,7 @@ export class BruinSmoothies extends Scene {
     constructor() {
         super();
 
-        this.initial_camera_location = Mat4.look_at(vec3(0, 0, 60), vec3(0, 0, 0), vec3(0, 1, 0));
+        this.initial_camera_location = Mat4.look_at(vec3(0, 30, 40), vec3(0, 0, 0), vec3(0, 1, 0));
         this.width = 30;
         this.height = 15;
         this.depth = 30;
@@ -110,7 +110,13 @@ export class BruinSmoothies extends Scene {
         [this.recipe, this.ingredients] = this.setup_level();
 
         this.score = 0;
-        this.click_controls = new custom_scenes.MouseControls(this);
+
+        document.addEventListener("mousedown", (e) => {
+            e.preventDefault();
+            this.pickIngredient(e.offsetX, e.offsetY);
+        });
+
+        this.context = this.program_state = null;
     }
 
     random_number(min=0, max=1, int=false) {
@@ -152,7 +158,7 @@ export class BruinSmoothies extends Scene {
 
         const recipes = {};
 
-        const recipe_ingr_count = 15;
+        const recipe_ingr_count = 10;
         const other_ingr_count = total_ingr_count - recipe_ingr_count;
         for (let i = 0; i < other_ingr_count; i++) {
             const ingredient_str = this.valid_ingredients[this.random_number(0, this.valid_ingredients.length - 1, true)];
@@ -241,16 +247,40 @@ export class BruinSmoothies extends Scene {
         this.new_line();
     }
 
-    check_ingredient_click(world_space) {
-        for (let i = 0; i < this.ingredients.length; i++) {
-            const ingredient = this.ingredients[i];
-            const distance = Math.sqrt(
-                Math.pow(world_space[0] - ingredient.center[0], 2) +
-                Math.pow(world_space[1] - ingredient.center[1], 2) +
-                Math.pow(world_space[2] - ingredient.center[2], 2)
-            );
+    calculate_mouse_ray(mouse_x, mouse_y) {
+        // source: https://antongerdelan.net/opengl/raycasting.html
+        const ndc_x = 2 * mouse_x / this.context.width - 1;
+        const ndc_y = 1 - 2 * mouse_y / this.context.height;
+        const clip_ray = vec4(ndc_x, ndc_y, -1, 1);
 
-            if (distance < ingredient.radius) {
+        const inv_proj_matrix = Mat4.inverse(this.program_state.projection_transform);
+        const eye_ray_homogeneous = inv_proj_matrix.times(clip_ray);
+        const eye_ray = vec4(eye_ray_homogeneous[0], eye_ray_homogeneous[1], -1.0, 0.0);
+
+        // keep in eye space for easier intersection calculations
+        return eye_ray
+    }
+
+    raySphereIntersection(ray, ingredient) {
+        const radius = ingredient.radius;
+        const center =
+            this.program_state.camera_inverse.times(
+              vec4(ingredient.center[0], ingredient.center[1], ingredient.center[2], 1)
+            )
+        .to3();
+
+        const a = ray.dot(ray);
+        const b = 2 * center.dot(ray);
+        const c = center.dot(center) - radius * radius;
+        const discriminant = b * b - 4 * a * c;
+    
+        return (discriminant >= 0);
+    }
+
+    pickIngredient(mouse_x, mouse_y) {
+        const ray = this.calculate_mouse_ray(mouse_x, mouse_y);
+        for (let i = 0; i < this.ingredients.length; i++) {
+            if (this.raySphereIntersection(ray, this.ingredients[i])) {
                 this.score += 1;
                 this.ingredients.splice(i, 1);
                 this.play_sound('sounds/juicy-splash.mp3');
@@ -265,6 +295,9 @@ export class BruinSmoothies extends Scene {
     }
 
     display(context, program_state) {
+        this.context = context;
+        this.program_state = program_state;
+
         if (!context.scratchpad.controls) {
             this.children.push(context.scratchpad.controls = new defs.Movement_Controls());
             program_state.set_camera(this.initial_camera_location);
@@ -289,7 +322,7 @@ export class BruinSmoothies extends Scene {
             let shape_mtx = model_transform;
             let new_x = ingredient.center[0] + ingredient.direction[0];
             let new_y = ingredient.center[1] + ingredient.direction[1];
-            let new_z = ingredient.center[2] + ingredient.direction[2]; // Update z position
+            let new_z = ingredient.center[2] + ingredient.direction[2];
             shape_mtx = shape_mtx
                 .times(Mat4.translation(new_x, new_y, new_z))
                 .times(Mat4.scale(ingredient.radius, ingredient.radius, ingredient.radius));
@@ -346,10 +379,6 @@ export class BruinSmoothies extends Scene {
             ingredient.center[0] = new_x;
             ingredient.center[1] = new_y;
             ingredient.center[2] = new_z;
-        }
-
-        if (!this.children.includes(this.click_controls)) {
-            this.children.push(this.click_controls);
         }
     }
 }
