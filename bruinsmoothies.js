@@ -4,8 +4,10 @@ import {custom_shaders} from './assets/shaders.js';
 import {custom_scenes} from './assets/scenes.js';
 
 const {
-    Vector, Vector3, vec, vec3, vec4, color, hex_color, Shader, Matrix, Mat4, Light, Shape, Material, Scene
+    Vector, Vector3, vec, vec3, vec4, color, hex_color, Shader, Matrix, Mat4, Light, Shape, Material, Scene, Texture
 } = tiny;
+
+const {Textured_Phong} = defs
 
 class Ingredient {
     constructor(x_pos, y_pos, z_pos, x_spd, y_spd, z_spd, rad, mas,
@@ -68,7 +70,7 @@ class Orange extends Ingredient {
     }
 }
 
-// Banana looks a little weird in 3D, need to move camera angle so it looks normal
+// Banana looks a little weird in 3D, need to move camera angle, so it looks normal
 class Banana extends Ingredient {
     constructor(x_pos, y_pos, z_pos, x_spd, y_spd, z_spd) {
         const shp = new custom_shapes.BananaShape();
@@ -99,10 +101,19 @@ export class BruinSmoothies extends Scene {
         this.depth = 30;
 
         this.border_shape = new custom_shapes.BoxShape();
-        this.border_material = new Material(new defs.Basic_Shader(), {color: color(1, 1, 1, 1)});
+        this.border_material = new Material(new Textured_Phong(), {
+            color: hex_color("#ffffff"),
+            ambient: 0.35, diffusivity: 0.1, specularity: 0.1,
+            texture: new Texture("assets/textures/basket.jpg", "NEAREST")
+        });
 
         this.floor_shape = new defs.Square();
-        this.floor_material = new Material(new defs.Phong_Shader(), {ambient: 1, color: hex_color("#446a18")});
+        //this.floor_material = new Material(new defs.Phong_Shader(), {ambient: 1, color: hex_color("#446a18")});
+        this.floor_material = new Material(new Textured_Phong(), {
+            color: hex_color("#ffffff"),
+            ambient: 0.4, diffusivity: 0.1, specularity: 0.1,
+            texture: new Texture("assets/textures/grass.jpg", "NEAREST")
+        });
 
         this.valid_ingredients = ["Watermelon", "Apple", "Orange", "Banana"];
         this.ingredient_mapping = {
