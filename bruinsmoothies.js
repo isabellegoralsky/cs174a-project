@@ -2,6 +2,7 @@ import {defs, tiny} from './examples/common.js';
 import {custom_shapes} from './assets/shapes.js';
 import {custom_shaders} from './assets/shaders.js';
 import {custom_scenes} from './assets/scenes.js';
+import {Text_Line} from './examples/text-demo.js';
 
 const {
     Vector, Vector3, vec, vec3, vec4, color, hex_color, Shader, Matrix, Mat4, Light, Shape, Material, Scene, Texture
@@ -108,7 +109,6 @@ export class BruinSmoothies extends Scene {
         });
 
         this.floor_shape = new defs.Square();
-        //this.floor_material = new Material(new defs.Phong_Shader(), {ambient: 1, color: hex_color("#446a18")});
         this.floor_material = new Material(new Textured_Phong(), {
             color: hex_color("#ffffff"),
             ambient: 0.4, diffusivity: 0.1, specularity: 0.1,
@@ -133,6 +133,14 @@ export class BruinSmoothies extends Scene {
         });
 
         this.context = this.program_state = null;
+
+        this.text_material = new Material(new Textured_Phong(), {
+            ambient: 1, diffusivity: 0, specularity: 0,
+            texture: new Texture("assets/textures/text.png")
+        });
+
+        this.recipe_text = new Text_Line(35);
+        this.score_text = new Text_Line(15);
     }
 
     random_number(min=0, max=1, int=false) {
@@ -402,6 +410,21 @@ export class BruinSmoothies extends Scene {
             ingredient.center[0] = new_x;
             ingredient.center[1] = new_y;
             ingredient.center[2] = new_z;
+
+            // Add text for "Recipe" on the left
+            this.recipe_text.set_string("Recipe", context.context);
+            let recipe_transform = Mat4.translation(-this.width / 2 - 17, 0, -this.height)
+                .times(Mat4.rotation(-Math.PI / 2, 1, 0, 0))
+                .times(Mat4.scale(1.2, 1.2, 1.2));
+            this.recipe_text.draw(context, program_state, recipe_transform, this.text_material);
+
+            // Add text for score on the right
+            this.score_text.set_string(`Score: ${this.score}`, context.context);
+            let score_transform = Mat4.translation(this.width / 2 + 10, 0, -this.height)
+                .times(Mat4.rotation(-Math.PI / 2, 1, 0, 0))
+                .times(Mat4.scale(1.2, 1.2, 1.2));
+            this.score_text.draw(context, program_state, score_transform, this.text_material);
+
         }
     }
 }
