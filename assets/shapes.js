@@ -233,14 +233,14 @@ const BoxShape = custom_shapes.BoxShape = class BoxShape extends Shape {
     constructor() {
         super("position", "normal", "texture_coord", "color");
 
-        const light_brown = color(0.54, 0.27, 0.07, 1); // Slightly darker brown color
-        const width = 36.8;
-        const height = 20.3;
+        const basket_color = color(0.54, 0.27, 0.07, 1);
+        const width = 30;
+        const height = 15;
+        const depth = 30;
         const thickness = 0.2;
-        const depth = 20.3; // Add depth
 
         this.arrays.position = [
-            // Front face (Transparent)
+            // Front face
             vec3(-width / 2 - thickness, -height / 2 - thickness, depth / 2), vec3(width / 2 + thickness, -height / 2 - thickness, depth / 2),
             vec3(width / 2 + thickness, height / 2 + thickness, depth / 2), vec3(-width / 2 - thickness, height / 2 + thickness, depth / 2),
             // Back face
@@ -261,7 +261,7 @@ const BoxShape = custom_shapes.BoxShape = class BoxShape extends Shape {
         ];
 
         this.arrays.normal = [
-            // Front face (Transparent)
+            // Front face
             vec3(0, 0, 1), vec3(0, 0, 1), vec3(0, 0, 1), vec3(0, 0, 1),
             // Back face
             vec3(0, 0, -1), vec3(0, 0, -1), vec3(0, 0, -1), vec3(0, 0, -1),
@@ -276,7 +276,7 @@ const BoxShape = custom_shapes.BoxShape = class BoxShape extends Shape {
         ];
 
         this.arrays.texture_coord = [
-            // Front face (Transparent)
+            // Front face
             vec(0, 0), vec(1, 0), vec(1, 1), vec(0, 1),
             // Back face
             vec(0, 0), vec(1, 0), vec(1, 1), vec(0, 1),
@@ -291,27 +291,27 @@ const BoxShape = custom_shapes.BoxShape = class BoxShape extends Shape {
         ];
 
         this.arrays.color = [
-            // Front face (Transparent)
-            light_brown, light_brown, light_brown, light_brown,
+            // Front face
+            basket_color, basket_color, basket_color, basket_color,
             // Back face
-            light_brown, light_brown, light_brown, light_brown,
+            basket_color, basket_color, basket_color, basket_color,
             // Top face
-            light_brown, light_brown, light_brown, light_brown,
+            basket_color, basket_color, basket_color, basket_color,
             // Bottom face
-            light_brown, light_brown, light_brown, light_brown,
+            basket_color, basket_color, basket_color, basket_color,
             // Right face
-            light_brown, light_brown, light_brown, light_brown,
+            basket_color, basket_color, basket_color, basket_color,
             // Left face
-            light_brown, light_brown, light_brown, light_brown,
+            basket_color, basket_color, basket_color, basket_color,
         ];
 
         this.indices.push(
-            // Front face (Transparent) - Skip indices to make it transparent
-            //0, 1, 2, 0, 2, 3,
+            // Front face
+            0, 1, 2, 0, 2, 3,
             // Back face
             4, 5, 6, 4, 6, 7,
-            // Top face
-            8, 9, 10, 8, 10, 11,
+            // Top face - commented out bc transparent
+            // 8, 9, 10, 8, 10, 11,
             // Bottom face
             12, 13, 14, 12, 14, 15,
             // Right face
