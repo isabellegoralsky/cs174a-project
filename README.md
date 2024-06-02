@@ -19,7 +19,6 @@ Welcome to the fruit stand! Our customers are thirsty, and they want their smoot
     - Parallel collisions make them like orbit each other (rare)
     - Fruit sometimes get stuck on the border and vibrate (rare)
   - Add recipe set (once we have more ingredients) + random selection + display w ctrl panel?
-  - Track scores
   - Add level system, with speed ups
 - General
   - Add more fruits (berries, milk?, peaches, cherries)
