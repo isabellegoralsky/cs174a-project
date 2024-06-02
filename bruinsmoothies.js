@@ -10,6 +10,27 @@ const {
 
 const {Textured_Phong} = defs
 
+const WATERMELON_SHAPE_1 = new custom_shapes.HalfCircle();
+const WATERMELON_SHAPE_2 = new custom_shapes.HalfCircle();
+const WATERMELON_SHAPE_3 = new custom_shapes.Circle();
+const WATERMELON_MATERIAL_1 = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: .1, color: hex_color("#207c25")});
+const WATERMELON_MATERIAL_2 = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0, color: hex_color("#dc2c40")});
+const WATERMELON_MATERIAL_3 = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0, specularity: 0, color: hex_color("#000000")});
+const APPLE_SHAPE_1 = new custom_shapes.AppleShape();
+const APPLE_SHAPE_2 = new defs.Triangle();
+const APPLE_SHAPE_3 = new defs.Square();
+const APPLE_MATERIAL_1 = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: .9, color: hex_color("#ff0800")});
+const APPLE_MATERIAL_2 = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0.1, color: hex_color("#1F9A0E")});
+const APPLE_MATERIAL_3 = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0, color: hex_color("#594A4B")});
+const ORANGE_SHAPE_1 = new defs.Subdivision_Sphere(4);
+const ORANGE_SHAPE_2 = new defs.Triangle();
+const ORANGE_MATERIAL_1 = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0.3, color: hex_color("#ff8100")});
+const ORANGE_MATERIAL_2 = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0.1, color: hex_color("#1F9A0E")});
+const BANANA_SHAPE_1 = new custom_shapes.BananaShape();
+const BANANA_MATERIAL_1 = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0.2, color: hex_color("#fdd835")});
+const BLUEBERRY_SHAPE_1 = new defs.Subdivision_Sphere(4);
+const BLUEBERRY_MATERIAL_1 = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0, color: hex_color("#2763dd")});
+
 class Ingredient {
     constructor(x_pos, y_pos, z_pos, x_spd, y_spd, z_spd, rad, mas,
                 shp, mat, shp2=null, mat2=null, shp3=null, mat3=null) {
@@ -28,14 +49,14 @@ class Ingredient {
 
 class Watermelon extends Ingredient {
     constructor(x_pos, y_pos, z_pos, x_spd, y_spd, z_spd) {
-        const shp = new custom_shapes.HalfCircle();
-        const mat = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: .1, color: hex_color("#207c25")});
+        const shp = WATERMELON_SHAPE_1;
+        const mat = WATERMELON_MATERIAL_1;
 
-        const shp2 = new custom_shapes.HalfCircle();
-        const mat2 = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0, color: hex_color("#dc2c40")});
+        const shp2 = WATERMELON_SHAPE_2;
+        const mat2 = WATERMELON_MATERIAL_2;
 
-        const shp3 = new custom_shapes.Circle();
-        const mat3 = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0, specularity: 0, color: hex_color("#000000")})
+        const shp3 = WATERMELON_SHAPE_3;
+        const mat3 = WATERMELON_MATERIAL_3;
 
         super(x_pos, y_pos, z_pos, x_spd, y_spd, z_spd, 1.3, 3, shp, mat, shp2, mat2, shp3, mat3);
     }
@@ -43,16 +64,16 @@ class Watermelon extends Ingredient {
 
 class Apple extends Ingredient {
     constructor(x_pos, y_pos, z_pos, x_spd, y_spd, z_spd) {
-        const shp = new custom_shapes.AppleShape();
-        const mat = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: .9, color: hex_color("#ff0800")});
+        const shp = APPLE_SHAPE_1;
+        const mat = APPLE_MATERIAL_1;
 
         // leaf
-        const shp2 = new defs.Triangle();
-        const mat2 = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0.1, color: hex_color("#1F9A0E")});
+        const shp2 = APPLE_SHAPE_2;
+        const mat2 = APPLE_MATERIAL_2;
 
         // stem
-        const shp3 = new defs.Square();
-        const mat3 = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0, color: hex_color("#594A4B")});
+        const shp3 = APPLE_SHAPE_3;
+        const mat3 = APPLE_MATERIAL_3;
 
         super(x_pos, y_pos, z_pos, x_spd, y_spd, z_spd, .5, 1, shp, mat, shp2, mat2, shp3, mat3);
     }
@@ -60,12 +81,12 @@ class Apple extends Ingredient {
 
 class Orange extends Ingredient {
     constructor(x_pos, y_pos, z_pos, x_spd, y_spd, z_spd) {
-        const shp = new defs.Subdivision_Sphere(4);
-        const mat = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0.3, color: hex_color("#ff8100")});
+        const shp = ORANGE_SHAPE_1;
+        const mat = ORANGE_MATERIAL_1;
 
         // leaf
-        const shp2 = new defs.Triangle();
-        const mat2 = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0.1, color: hex_color("#1F9A0E")});
+        const shp2 = ORANGE_SHAPE_2;
+        const mat2 = ORANGE_MATERIAL_2;
 
         super(x_pos, y_pos, z_pos, x_spd, y_spd, z_spd, .75, 1.5, shp, mat, shp2, mat2);
     }
@@ -74,8 +95,8 @@ class Orange extends Ingredient {
 // Banana looks a little weird in 3D, need to move camera angle, so it looks normal
 class Banana extends Ingredient {
     constructor(x_pos, y_pos, z_pos, x_spd, y_spd, z_spd) {
-        const shp = new custom_shapes.BananaShape();
-        const mat = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0.2, color: hex_color("#fdd835")});
+        const shp = BANANA_SHAPE_1;
+        const mat = BANANA_MATERIAL_1;
 
         super(x_pos, y_pos, z_pos, x_spd, y_spd, z_spd, 0.6, 2, shp, mat);
 
@@ -94,8 +115,8 @@ class Banana extends Ingredient {
 
 class Blueberry extends Ingredient {
   constructor(x_pos, y_pos, z_pos, x_spd, y_spd, z_spd) {
-      const shp = new defs.Subdivision_Sphere(4);
-      const mat = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0, color: hex_color("#2763dd")});
+      const shp = BLUEBERRY_SHAPE_1;
+      const mat = BLUEBERRY_MATERIAL_1;
 
       super(x_pos, y_pos, z_pos, x_spd, y_spd, z_spd, .5, .5, shp, mat);
   }

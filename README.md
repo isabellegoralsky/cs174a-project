@@ -14,6 +14,7 @@ Welcome to the fruit stand! Our customers are thirsty, and they want their smoot
     - Blueberry
       - Basic rn, make it look a little cooler, small stem or smth maybe
   - Make ingredients spin a little?
+  - Shadows?
 - Gameplay
   - Create level progression system
     - Maintain score across levels
@@ -24,18 +25,16 @@ Welcome to the fruit stand! Our customers are thirsty, and they want their smoot
   - Fix bugs
     - Error messages in console
       - Audio.play()
-      - Laggy
-      - tiny-graphics.js:751 Uncaught Error: You are sending a lot of object definitions to the GPU, probably by mistake!  
-                    Many of them are likely duplicates, which you don't want since sending each one is very slow.  
-                    To avoid this, from your display() function avoid ever declaring a Shape Shader or Texture (or 
-                    subclass of these) with "new", thus causing the definition to be re-created and re-transmitted every
-                    frame. Instead, call these in your scene's constructor and keep the result as a class member, 
-                    or otherwise make sure it only happens once.  In the off chance that you have a somehow deformable 
-                    shape that MUST change every frame, then at least use the special arguments of 
-                    copy_onto_graphics_card to limit which buffers get overwritten every frame to only 
-                    the necessary ones.
-        - Pass all shapes to GPU 1x at start maybe? I think we did this in a prev proj
+      - Laggy (fix 'new' creations)
+  - Collision - speed up then decel? some randomness?
+  - Level timer?
 - General
   - Add more fruits (raspberries, strawberries, cherries, blackberries, milk?, peaches)
     - Peaches and cherries could look similar to apples, cherries smaller + in a pair?
+  - Add fun ingredients?
+    - Bomb that explodes and knocks stuff back
+    - Freeze that freezes screen for a bit (powerup)
+    - Fake ingredients
+    - Insta lose
   - Clean/organize code
+    - Top part with const defns looks ugly
