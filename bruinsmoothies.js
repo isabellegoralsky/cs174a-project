@@ -433,6 +433,9 @@ export class BruinSmoothies extends Scene {
                 shape_mtx = shape_mtx
                     .times(Mat4.scale(1.5, 1.5, 1.5))
                     .times(Mat4.rotation(135, 0, 0, 1));
+            }else if (ingredient instanceof Orange) {
+                // orange
+                shape_mtx = shape_mtx.times(Mat4.scale(3, 3, 3));
             }
 
             let shape_mtx_non_rotate = shape_mtx;
@@ -441,6 +444,7 @@ export class BruinSmoothies extends Scene {
                     .times(Mat4.scale(1.5, 1.175, 1.5))
                     .times(Mat4.rotation(Math.PI / 2, 0, 1, 0));
             }
+
 
             ingredient.shape.draw(context, program_state, shape_mtx, ingredient.material);
 
@@ -453,8 +457,9 @@ export class BruinSmoothies extends Scene {
                     leaf_offset = Mat4.translation(0, .25, 0).times(Mat4.rotation(Math.PI / 2, 0, 0, 1));
                     leaf_transform = leaf_transform.times(leaf_offset).times(Mat4.scale(.8, .8, .8));
                 } else if (ingredient instanceof Orange) {
-                    leaf_offset = Mat4.translation(0, .8, 0).times(Mat4.rotation(Math.PI / 3, 0, 0, 1));
-                    leaf_transform = leaf_transform.times(leaf_offset).times(Mat4.scale(.8, .8, .8));
+                    // orange leaf
+                    leaf_offset = Mat4.translation(0, 0.5, 0).times(Mat4.rotation(Math.PI / 3, 0, 0, 1)).times(Mat4.rotation(Math.PI / 3, 0, 1, 0));
+                    leaf_transform = leaf_transform.times(leaf_offset).times(Mat4.scale(1.2, .5, 1.8));
                 } else {
                     leaf_transform = leaf_transform.times(Mat4.scale(.9, .9, 1)).times(Mat4.translation(0, 0, .0001));
                 }
