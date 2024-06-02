@@ -446,7 +446,7 @@ export class BruinSmoothies extends Scene {
             }
 
             // Add text for "Recipe" on the left
-            this.recipe_text.set_string("Recipe", context.context);
+            this.recipe_text.set_string("Recipe:", context.context);
             let recipe_transform = Mat4.translation(-this.width / 2 - 17, 0, -this.height)
                 .times(Mat4.rotation(-Math.PI / 2, 1, 0, 0))
                 .times(Mat4.scale(1.2, 1.2, 1.2));
