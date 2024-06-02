@@ -3,24 +3,39 @@
 Welcome to the fruit stand! Our customers are thirsty, and they want their smoothies now! Unfortunately, we spilled the ingredients everywhere and they're bouncing around. Help us out by clicking the necessary ingredients to fulfill the recipe!
 
 ## TDL
-- Transition to 3D
-  - Revert watermelon to sphere model?
-  - Fix border collisions with banana bc it kinda goes thru rn
 - Visuals
-  - Fruit are skewed/shearing a little as they move from the center, fix that
-  - Fix banana model
-  - Fix apple specular (double shine is weird?)
+  - Fix models
+    - Watermelon
+      - Revert to sphere model?
+    - Banana
+      - Fix hitbox - hard to click + weird border collisions (it goes thru the wall a bit)
+    - Apple
+      - Fix specular, double shine is weird?
+    - Blueberry
+      - Basic rn, make it look a little cooler, small stem or smth maybe
   - Make ingredients spin a little?
 - Gameplay
-  - Fix collisions
-    - Banana shape doesnt match visual
-    - Watermelon overlaps w fruits/border before colliding with it
-      - I think bc we scaled it to look oval but it only takes up spherical space
-    - Parallel collisions make them like orbit each other (rare)
-    - Fruit sometimes get stuck on the border and vibrate (rare)
-  - Add recipe set (once we have more ingredients) + random selection + display w ctrl panel?
-  - Add level system, with speed ups
+  - Create level progression system
+    - Maintain score across levels
+    - Speed up to make it harder
+  - Improve recipes
+    - More variation (diff amounts, more fruits too, implement multiples of 1 fruit)
+    - Use control panel?
+  - Fix bugs
+    - Error messages in console
+      - Audio.play()
+      - Laggy
+      - tiny-graphics.js:751 Uncaught Error: You are sending a lot of object definitions to the GPU, probably by mistake!  
+                    Many of them are likely duplicates, which you don't want since sending each one is very slow.  
+                    To avoid this, from your display() function avoid ever declaring a Shape Shader or Texture (or 
+                    subclass of these) with "new", thus causing the definition to be re-created and re-transmitted every
+                    frame. Instead, call these in your scene's constructor and keep the result as a class member, 
+                    or otherwise make sure it only happens once.  In the off chance that you have a somehow deformable 
+                    shape that MUST change every frame, then at least use the special arguments of 
+                    copy_onto_graphics_card to limit which buffers get overwritten every frame to only 
+                    the necessary ones.
+        - Pass all shapes to GPU 1x at start maybe? I think we did this in a prev proj
 - General
-  - Add more fruits (berries, milk?, peaches, cherries)
+  - Add more fruits (raspberries, strawberries, cherries, blackberries, milk?, peaches)
     - Peaches and cherries could look similar to apples, cherries smaller + in a pair?
   - Clean/organize code

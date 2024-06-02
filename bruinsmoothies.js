@@ -95,7 +95,7 @@ class Banana extends Ingredient {
 class Blueberry extends Ingredient {
   constructor(x_pos, y_pos, z_pos, x_spd, y_spd, z_spd) {
       const shp = new defs.Subdivision_Sphere(4);
-      const mat = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0, color: hex_color("#4f86f7")});
+      const mat = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0, color: hex_color("#2763dd")});
 
       super(x_pos, y_pos, z_pos, x_spd, y_spd, z_spd, .5, .5, shp, mat);
   }
@@ -105,7 +105,7 @@ export class BruinSmoothies extends Scene {
     constructor() {
         super();
 
-        this.initial_camera_location = Mat4.look_at(vec3(0, 30, 40), vec3(0, 0, 0), vec3(0, 1, 0));
+        this.initial_camera_location = Mat4.look_at(vec3(0, 60, 30), vec3(0, 0, 0), vec3(0, 1, 0));
         this.width = 30;
         this.height = 15;
         this.depth = 30;
@@ -124,7 +124,6 @@ export class BruinSmoothies extends Scene {
             texture: new Texture("assets/textures/grass.jpg", "NEAREST")
         });
 
-        this.valid_ingredients = ["Watermelon", "Apple", "Orange", "Banana", "Blueberry"];
         this.ingredient_mapping = {
             "Watermelon": Watermelon,
             "Apple": Apple,
@@ -132,16 +131,13 @@ export class BruinSmoothies extends Scene {
             "Banana": Banana,
             "Blueberry": Blueberry
         };
-
         this.recipes = {
             "Tropical Delight": ["Banana", "Orange", "Apple"],
             "Watermelon Blast": ["Watermelon", "Apple", "Orange"],
             "Berry Blast":      ["Blueberry", "Blueberry", "Blueberry"]
         };
-
-        [this.recipe, this.ingredients] = this.setup_level();
-
-        this.score = 0;
+        
+        this.restart_level();
 
         document.addEventListener("mousedown", (e) => {
             e.preventDefault();
@@ -156,26 +152,25 @@ export class BruinSmoothies extends Scene {
             color: hex_color("#283cc8"),
         });
 
-        this.recipe_text = new Text_Line(35);
+        this.recipe_text = new Text_Line(50);
         this.score_text = new Text_Line(15);
     }
 
-    random_number(min=0, max=1, int=false) {
+    random_number(min=0, max=1) {
         let num = Math.random() * (max - min) + min;
-        num = int ? Math.round(num) : num;
         return num;
     }
 
     // avoids ingredients spawning at the same location
-    generate_valid_position(existing_ingredients, radius, margin) {
+    generate_valid_position(existing_ingredients, margin=2) {
         let is_valid_position = false;
         let x, y, z;
 
         while (!is_valid_position) {
             is_valid_position = true;
-            x = this.random_number(-this.width / 2 + radius + margin, this.width / 2 - radius - margin);
-            y = this.random_number(-this.height / 2 + radius + margin, this.height / 2 - radius - margin);
-            z = this.random_number(-this.depth / 2 + radius + margin, this.depth / 2 - radius - margin);
+            x = this.random_number(-this.width / 2 + margin, this.width / 2 - margin);
+            y = this.random_number(-this.height / 2 + margin, this.height / 2 - margin);
+            z = this.random_number(-this.depth / 2 + margin, this.depth / 2 - margin);
 
             for (let ingr of existing_ingredients) {
                 const distance = Math.sqrt(
@@ -183,7 +178,7 @@ export class BruinSmoothies extends Scene {
                     Math.pow(y - ingr.center[1], 2) +
                     Math.pow(z - ingr.center[2], 2)
                 );
-                if (distance < radius + ingr.radius + margin) {
+                if (distance < 2*margin) {
                     is_valid_position = false;
                     break;
                 }
@@ -193,38 +188,39 @@ export class BruinSmoothies extends Scene {
         return [x, y, z];
     }
 
-    setup_level() {
-        const margin = 0.5;
-        const ingredient_list = [];
-        const total_ingr_count = 25;
-
-        const recipe_names = Object.keys(this.recipes);
-        const random_recipe_name = recipe_names[Math.floor(Math.random() * recipe_names.length)];
-        const recipe = this.recipes[random_recipe_name];
-        this.current_ingredients = [...recipe];
-
-        const recipe_ingr_count = 10;
-        const other_ingr_count = total_ingr_count - recipe_ingr_count;
-        for (let i = 0; i < other_ingr_count; i++) {
-            const ingredient_str = this.valid_ingredients[this.random_number(0, this.valid_ingredients.length - 1, true)];
-            const ingredient_type = this.ingredient_mapping[ingredient_str];
-            const radius = ingredient_type === Watermelon ? 1 : 0.5;
-            const [init_x, init_y, init_z] = this.generate_valid_position(ingredient_list, radius, margin);
-            const init_x_spd = this.random_number(-0.05, 0.05);
-            const init_y_spd = this.random_number(-0.05, 0.05);
-            const init_z_spd = this.random_number(-0.05, 0.05);
-            ingredient_list.push(new ingredient_type(init_x, init_y, init_z, init_x_spd, init_y_spd, init_z_spd));
-        }
-
-        return [recipe, ingredient_list];
+    generate_ingredient(ingredient_list, ingredient_type) {
+        const [init_x, init_y, init_z] = this.generate_valid_position(ingredient_list);
+        const init_x_spd = this.random_number(-0.05, 0.05);
+        const init_y_spd = this.random_number(-0.05, 0.05);
+        const init_z_spd = this.random_number(-0.05, 0.05);
+        return new ingredient_type(init_x, init_y, init_z, init_x_spd, init_y_spd, init_z_spd);
     }
 
     restart_level() {
+        const total_ingr_count = 15;
+        const ingredient_list = [];
+        const ingredient_names = Object.keys(this.ingredient_mapping);
+
         const recipe_names = Object.keys(this.recipes);
         const random_recipe_name = recipe_names[Math.floor(Math.random() * recipe_names.length)];
         const recipe = this.recipes[random_recipe_name];
-        this.current_ingredients = [...recipe];
-        [this.recipe, this.ingredients] = this.setup_level();
+        const recipe_ingr_count = recipe.length;
+        const other_ingr_count = total_ingr_count - recipe_ingr_count;
+
+        for (let ingredient of recipe) {
+            const ingredient_type = this.ingredient_mapping[ingredient];
+            ingredient_list.push(this.generate_ingredient(ingredient_list, ingredient_type));
+        }
+
+        for (let i = 0; i < other_ingr_count; i++) {
+            const random_ingredient_name = ingredient_names[Math.floor(Math.random() * ingredient_names.length)];
+            const ingredient_type = this.ingredient_mapping[random_ingredient_name];
+            ingredient_list.push(this.generate_ingredient(ingredient_list, ingredient_type));
+        }
+
+        this.recipe_name = random_recipe_name; // name of smoothie
+        this.current_ingredients = [...recipe]; // list of string names of ingredients
+        this.ingredients = ingredient_list; // list of ingredient objects
         this.score = 0;
     }
 
@@ -239,6 +235,29 @@ export class BruinSmoothies extends Scene {
             .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
             .times(Mat4.scale(this.width*1.5, this.depth*1.5, 1));
         this.floor_shape.draw(context, program_state, floor_transform, this.floor_material);
+    }
+
+    draw_text(context, program_state) {
+      this.recipe_text.set_string(`Recipe: ${this.recipe_name}`, context.context);
+      let recipe_transform = Mat4.identity()
+          .times(Mat4.translation(-this.width*1.5 + 2.5, -this.height / 2 - 0.3, -this.depth*1.5 + 2.5))
+          .times(Mat4.rotation(-Math.PI / 2, 1, 0, 0));
+      this.recipe_text.draw(context, program_state, recipe_transform, this.text_material);
+
+      let ingredient_transform = recipe_transform
+          .times(Mat4.translation(0, -5, 0));
+      for (let ingredient of this.current_ingredients) {
+          this.recipe_text.set_string(ingredient, context.context);
+          this.recipe_text.draw(context, program_state, ingredient_transform, this.text_material);
+          ingredient_transform = ingredient_transform.times(Mat4.translation(0, -2.5, 0));
+      }
+
+      this.score_text.set_string(`Score: ${this.score}`, context.context);
+      let score_transform = Mat4.identity()
+          .times(Mat4.translation(this.width*1.5 - 20, -this.height / 2 - 0.3, -this.depth*1.5 + 2.5))
+          .times(Mat4.rotation(-Math.PI / 2, 1, 0, 0))
+          .times(Mat4.scale(1.3, 1, 1.3));
+      this.score_text.draw(context, program_state, score_transform, this.text_material);
     }
 
     check_wall_collision(ingredient) {
@@ -338,10 +357,10 @@ export class BruinSmoothies extends Scene {
                 const ingredient_name = this.ingredients[i].constructor.name;
                 const index = this.current_ingredients.indexOf(ingredient_name);
                 if (index !== -1) {
-                    this.score += 1;
+                    this.score += 100;
                     this.current_ingredients.splice(index, 1);
                 } else {
-                    this.score -= 1;
+                    this.score -= 100;
                 }
                 this.ingredients.splice(i, 1);
                 this.play_sound('sounds/juicy-splash.mp3');
@@ -369,6 +388,7 @@ export class BruinSmoothies extends Scene {
 
         this.draw_border(context, program_state);
         this.draw_floor(context, program_state);
+        this.draw_text(context, program_state);
 
         for (let i = 0; i < this.ingredients.length; i++) {
             this.check_wall_collision(this.ingredients[i]);
@@ -448,31 +468,8 @@ export class BruinSmoothies extends Scene {
             ingredient.center[2] = new_z;
         }
 
-        // Check if the current ingredients list is empty to restart the level
         if (this.current_ingredients.length === 0) {
             this.restart_level();
         }
-
-        // Add text for "Recipe" on the left
-        this.recipe_text.set_string("Recipe:", context.context);
-        let recipe_transform = Mat4.translation(-this.width / 2 - 17, 0, -this.height)
-            .times(Mat4.rotation(-Math.PI / 2, 1, 0, 0))
-            .times(Mat4.scale(1.2, 1.2, 1.2));
-        this.recipe_text.draw(context, program_state, recipe_transform, this.text_material);
-
-        // Render the ingredients under the recipe
-        let ingredient_transform = recipe_transform.times(Mat4.translation(-2.5, -2.5, 0));
-        for (let ingredient of this.current_ingredients) {
-            this.recipe_text.set_string(ingredient, context.context);
-            this.recipe_text.draw(context, program_state, ingredient_transform, this.text_material);
-            ingredient_transform = ingredient_transform.times(Mat4.translation(0, -1.5, 0));
-        }
-
-        // Add text for score on the right
-        this.score_text.set_string(`Score: ${this.score}`, context.context);
-        let score_transform = Mat4.translation(this.width / 2 + 10, 0, -this.height)
-            .times(Mat4.rotation(-Math.PI / 2, 1, 0, 0))
-            .times(Mat4.scale(1.2, 1.2, 1.2));
-        this.score_text.draw(context, program_state, score_transform, this.text_material);
     }
 }
