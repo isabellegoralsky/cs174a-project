@@ -133,15 +133,15 @@ export class BruinSmoothies extends Scene {
 
         this.border_shape = new custom_shapes.BoxShape();
         this.border_material = new Material(new Textured_Phong(), {
-            color: hex_color("#ffffff"),
-            ambient: 0.35, diffusivity: 0.1, specularity: 0.1,
+            color: hex_color("#373737"),
+            ambient: .6, diffusivity: 0.1, specularity: 0.1,
             texture: new Texture("assets/textures/basket.jpg", "NEAREST")
         });
 
         this.floor_shape = new defs.Square();
         this.floor_material = new Material(new Textured_Phong(), {
-            color: hex_color("#ffffff"),
-            ambient: 0.4, diffusivity: 0.1, specularity: 0.1,
+            color: hex_color("#000000"),
+            ambient: 1, diffusivity: 0.1, specularity: 0.1,
             texture: new Texture("assets/textures/grass.jpg", "NEAREST")
         });
 
