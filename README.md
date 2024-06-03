@@ -5,17 +5,20 @@ Welcome to the fruit stand! Our customers are thirsty, and they want their smoot
 ## TDL
 - Visuals
   - Fix models
-    - Watermelon
-      - Revert to sphere model?
+    - Fix hitboxes
+      - Watermelon & banana hard to click
     - Banana
-      - Fix hitbox - hard to click + weird border collisions (it goes thru the wall a bit)
+      - Looks weird
     - Apple
-      - Fix specular, double shine is weird?
-    - Blueberry
-      - Basic rn, make it look a little cooler, small stem or smth maybe
+      - Push 2 halves closer together, fix double specular
+  - Add more fruits (raspberries, strawberries, cherries, blackberries, milk?, peaches)
+    - Peaches and cherries could look similar to apples, cherries smaller + in a pair?
   - Make ingredients spin a little?
   - Shadows?
 - Gameplay
+  - Mouse picking kinda broken, hitbox/model sizing might be weird (or check radius)
+  - Fix collisions
+    - Kinda go thru the wall rn
   - Create level progression system
     - Maintain score across levels
     - Speed up to make it harder
@@ -29,8 +32,6 @@ Welcome to the fruit stand! Our customers are thirsty, and they want their smoot
   - Collision - speed up then decel? some randomness?
   - Level timer?
 - General
-  - Add more fruits (raspberries, strawberries, cherries, blackberries, milk?, peaches)
-    - Peaches and cherries could look similar to apples, cherries smaller + in a pair?
   - Add fun ingredients?
     - Bomb that explodes and knocks stuff back
     - Freeze that freezes screen for a bit (powerup)
