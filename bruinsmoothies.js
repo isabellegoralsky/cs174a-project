@@ -231,9 +231,11 @@ export class BruinSmoothies extends Scene {
             "Freeze": Freeze,
         };
         this.recipes = {
-            "Tropical Delight": ["Cherry", "Orange", "Apple"],
-            "Watermelon Blast": ["Watermelon", "Apple", "Orange"],
-            "Berry Blast":      ["Blueberry", "Blueberry", "Blueberry"]
+            "Citrus Splash":  ["Orange", "Orange", "Apple", "Banana"],
+            "Berry Blast":    ["Blueberry", "Blueberry", "Cherry", "Watermelon", "Banana"],
+            "Cherry Bomb":    ["Cherry", "Cherry", "Blueberry", "Orange"],
+            // Strawnana
+            // Cran-apple
         };
         
         this.setup_game();

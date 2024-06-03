@@ -11,10 +11,12 @@ Welcome to the fruit stand! Our customers are thirsty, and they want their smoot
     - Apple
       - Move 2 sides a little closer together
       - Fix double specular
-  - Add more fruits (peaches, strawberries, raspberries, blackberries, milk?)
+  - Add more fruits
+    - Cranberries = blueberries but red
     - Peaches could look similar to apples
-  - Make ingredients spin a little?
+    - Strawberries, kiwis, raspberries, blackberries
   - Shadows?
+  - Make ingredients spin a little?
 - Gameplay
   - Fix bugs
     - First clicks dont work
@@ -26,16 +28,17 @@ Welcome to the fruit stand! Our customers are thirsty, and they want their smoot
   - Fix text display
     - Make strikes be red X's
     - Fix rotation
+  - Improve recipes
+    - More variation in amounts/ingredients, once we have more fruit
+    - Multiples as x2?
+    - Use control panel?
+    - Probability of ingredient inclusion?
+  - Put correct fruit outside on the ground or something?
   - Level system
     - You lost! popup?
     - Change speedup amount?
-  - Improve recipes
-    - More variation (diff amounts, more fruits too, implement multiples of 1 fruit - like x3)
-    - Use control panel?
-    - Probability of ingredient inclusion?
   - Collision - speed up then decel? some randomness?
   - Level timer?
-  - Put correct fruit outside on the ground or something?
 - General
   - Clean/organize code
     - Top part with const defns looks ugly
