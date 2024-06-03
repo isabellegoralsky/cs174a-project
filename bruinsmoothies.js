@@ -279,13 +279,15 @@ export class BruinSmoothies extends Scene {
       let recipe_transform = Mat4.identity()
           .times(Mat4.translation(-this.width*1.5 + 2.5, -this.height / 2 - 0.3, -this.depth*1.5 + 2.5))
           .times(Mat4.rotation(-Math.PI / 2, 1, 0, 0));
-      this.recipe_text.draw(context, program_state, recipe_transform, this.text_material);
+      this.recipe_text.draw(context, program_state, recipe_transform.times(Mat4.rotation(20,1,0,0))
+          .times(Mat4.translation(4,1,9)), this.text_material);
 
       let ingredient_transform = recipe_transform
           .times(Mat4.translation(0, -5, 0));
       for (let ingredient of this.current_ingredients) {
           this.recipe_text.set_string(ingredient, context.context);
-          this.recipe_text.draw(context, program_state, ingredient_transform, this.text_material);
+          this.recipe_text.draw(context, program_state, ingredient_transform.times(Mat4.rotation(20,1,0,0))
+              .times(Mat4.translation(6,1,10)), this.text_material);
           ingredient_transform = ingredient_transform.times(Mat4.translation(0, -2.5, 0));
       }
 
@@ -293,7 +295,9 @@ export class BruinSmoothies extends Scene {
       let score_transform = Mat4.identity()
           .times(Mat4.translation(this.width*1.5 - 20, -this.height / 2 - 0.3, -this.depth*1.5 + 2.5))
           .times(Mat4.rotation(-Math.PI / 2, 1, 0, 0))
-          .times(Mat4.scale(1.3, 1, 1.3));
+          .times(Mat4.scale(1.3, 1, 1.3))
+          .times(Mat4.rotation(20,1,0,0))
+          .times(Mat4.translation(-2,1,10));
       this.score_text.draw(context, program_state, score_transform, this.text_material);
     }
 
