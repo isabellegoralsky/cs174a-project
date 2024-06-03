@@ -46,6 +46,12 @@ const BLUEBERRY_MATERIAL_1 = new Material(new Textured_Phong(), {
     ambient: 1, diffusivity: 0.1, specularity: 0.2,
     texture: new Texture("assets/textures/blueb.png", "NEAREST")
 });
+const BOMB_SHAPE_1 = new defs.Subdivision_Sphere(4);
+const BOMB_MATERIAL_1 = new Material(new Textured_Phong(), {
+    color: hex_color("#000000"),
+    ambient: 1, diffusivity: 0.1, specularity: 1,
+    texture: new Texture("assets/textures/bomb.jpg", "NEAREST")
+});
 
 class Ingredient {
     constructor(x_pos, y_pos, z_pos, x_spd, y_spd, z_spd, rad, mas,
@@ -138,6 +144,15 @@ class Blueberry extends Ingredient {
   }
 }
 
+class Bomb extends Ingredient {
+    constructor(x_pos, y_pos, z_pos, x_spd, y_spd, z_spd) {
+        const shp = BOMB_SHAPE_1;
+        const mat = BOMB_MATERIAL_1;
+
+        super(x_pos, y_pos, z_pos, x_spd, y_spd, z_spd, 1, .75, shp, mat);
+    }
+}
+
 export class BruinSmoothies extends Scene {
     constructor() {
         super();
@@ -166,7 +181,8 @@ export class BruinSmoothies extends Scene {
             "Apple": Apple,
             "Orange": Orange,
             "Banana": Banana,
-            "Blueberry": Blueberry
+            "Blueberry": Blueberry,
+            "Bomb": Bomb
         };
         this.recipes = {
             "Tropical Delight": ["Banana", "Orange", "Apple"],
