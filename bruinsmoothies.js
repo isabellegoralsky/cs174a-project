@@ -16,6 +16,7 @@ const WATERMELON_MATERIAL_1 = new Material(new Textured_Phong(), {
     ambient: 1, diffusivity: 0.1, specularity: 0.3,
     texture: new Texture("assets/textures/watermelon.png", "NEAREST")
 });
+
 const APPLE_SHAPE_1 = new custom_shapes.AppleShape();
 const APPLE_SHAPE_2 = new defs.Triangle();
 const APPLE_SHAPE_3 = new defs.Square();
@@ -26,6 +27,7 @@ const APPLE_MATERIAL_1 = new Material(new Textured_Phong(), {
 });
 const APPLE_MATERIAL_2 = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0.1, color: hex_color("#1F9A0E")});
 const APPLE_MATERIAL_3 = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0, color: hex_color("#594A4B")});
+
 const ORANGE_SHAPE_1 = new defs.Subdivision_Sphere(4);
 const ORANGE_SHAPE_2 = new defs.Triangle();
 const ORANGE_MATERIAL_1 = new Material(new Textured_Phong(), {
@@ -34,23 +36,33 @@ const ORANGE_MATERIAL_1 = new Material(new Textured_Phong(), {
     texture: new Texture("assets/textures/orange.jpg", "NEAREST")
 });
 const ORANGE_MATERIAL_2 = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0.1, color: hex_color("#1F9A0E")});
+
 const BANANA_SHAPE_1 = new custom_shapes.BananaShape();
 const BANANA_MATERIAL_1 = new Material(new Textured_Phong(), {
     color: hex_color("#000000"),
     ambient: 1, diffusivity: 0.1, specularity: 0.2,
     texture: new Texture("assets/textures/banana.jpg", "NEAREST")
 });
+
 const BLUEBERRY_SHAPE_1 = new defs.Subdivision_Sphere(4);
 const BLUEBERRY_MATERIAL_1 = new Material(new Textured_Phong(), {
     color: hex_color("#000000"),
     ambient: 1, diffusivity: 0.1, specularity: 0.2,
     texture: new Texture("assets/textures/blueb.png", "NEAREST")
 });
+
 const BOMB_SHAPE_1 = new defs.Subdivision_Sphere(4);
 const BOMB_MATERIAL_1 = new Material(new Textured_Phong(), {
     color: hex_color("#000000"),
     ambient: 1, diffusivity: 0.1, specularity: 1,
     texture: new Texture("assets/textures/bomb.jpg", "NEAREST")
+});
+
+const ICY_SPHERE_SHAPE = new defs.Subdivision_Sphere(4);
+const ICY_SPHERE_MATERIAL = new Material(new Textured_Phong(), {
+    color: hex_color("#000000"), // Light blue color to represent ice
+    ambient: 1, diffusivity: 0.1, specularity: 0.8,
+    texture: new Texture("assets/textures/icy.jpg", "NEAREST")
 });
 
 class Ingredient {
@@ -153,6 +165,15 @@ class Bomb extends Ingredient {
     }
 }
 
+class IcySphere extends Ingredient {
+    constructor(x_pos, y_pos, z_pos, x_spd, y_spd, z_spd) {
+        const shp = ICY_SPHERE_SHAPE;
+        const mat = ICY_SPHERE_MATERIAL;
+
+        super(x_pos, y_pos, z_pos, x_spd, y_spd, z_spd, 1, 1, shp, mat);
+    }
+}
+
 export class BruinSmoothies extends Scene {
     constructor() {
         super();
@@ -182,7 +203,8 @@ export class BruinSmoothies extends Scene {
             "Orange": Orange,
             "Banana": Banana,
             "Blueberry": Blueberry,
-            "Bomb": Bomb
+            "Bomb": Bomb,
+            "IcySphere": IcySphere
         };
         this.recipes = {
             "Tropical Delight": ["Banana", "Orange", "Apple"],
@@ -407,20 +429,39 @@ export class BruinSmoothies extends Scene {
         return (discriminant >= 0);
     }
 
+    freezeIngredients() {
+        for (let ingredient of this.ingredients) {
+            ingredient.frozenDirection = ingredient.direction; // Save current direction
+            ingredient.direction = vec3(0, 0, 0); // Stop movement
+        }
+        setTimeout(() => {
+            for (let ingredient of this.ingredients) {
+                ingredient.direction = ingredient.frozenDirection; // Restore direction
+            }
+        }, 1500); // Freeze for 1.5 seconds
+    }
+
     pickIngredient(mouse_x, mouse_y) {
         const ray = this.calculate_mouse_ray(mouse_x, mouse_y);
         for (let i = 0; i < this.ingredients.length; i++) {
             if (this.raySphereIntersection(ray, this.ingredients[i])) {
                 const ingredient_name = this.ingredients[i].constructor.name;
                 const index = this.current_ingredients.indexOf(ingredient_name);
-                if (index !== -1) {
-                    this.score += 100;
-                    this.current_ingredients.splice(index, 1);
+                //can check for bomb and play explosion sound
+                if (ingredient_name === "IcySphere") {
+                    this.freezeIngredients();
+                    this.play_sound('sounds/freeze.mp3');
                 } else {
-                    this.score -= 100;
+                    const index = this.current_ingredients.indexOf(ingredient_name);
+                    if (index !== -1) {
+                        this.score += 100;
+                        this.current_ingredients.splice(index, 1);
+                    } else {
+                        this.score -= 100;
+                    }
+                    this.play_sound('sounds/juicy-splash.mp3');
                 }
                 this.ingredients.splice(i, 1);
-                this.play_sound('sounds/juicy-splash.mp3');
                 break;
             }
         }
