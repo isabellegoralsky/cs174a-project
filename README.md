@@ -15,28 +15,32 @@ Welcome to the fruit stand! Our customers are thirsty, and they want their smoot
   - Make ingredients spin a little?
   - Shadows?
 - Gameplay
-  - Mouse picking kinda broken, hitbox/model sizing might be weird (or check radius)
+  - Fix bugs
+    - First clicks dont work
+    - Laggy!
+    - Mem leaks?
   - Fix collisions
     - Kinda go thru the wall rn (banana, watermelon?)
-  - Create level progression system
-    - Maintain score across levels
-    - 3 strikes and you're out (rotate text)
-    - Speed up to make it harder
+  - Level system
+    - Change speedup amount?
+    - Strikes text (red X, rotate)
+    - Play good vs bad sound
   - Improve recipes
     - More variation (diff amounts, more fruits too, implement multiples of 1 fruit - like x3)
     - Use control panel?
-  - Fix bugs
-    - Laggy
   - Sound
-    - Make ding when u get points? Or level up? And new sound for collision? Doesn't play pre-click?
+    - Click too fast --> not all the splash sounds?
+    - No collision sound?
+    - Make ding when u get points/level up?
+    - Doesn't play pre-click?
   - Collision - speed up then decel? some randomness?
   - Level timer?
 - General
   - Add fun ingredients?
-    - Bomb that explodes and knocks stuff back
-    - Freeze that freezes screen for a bit (powerup)
-    - Fake ingredients
-    - Insta lose
+    - Bomb insta lose > explodes
+      - Sound
+    - Freeze
+    - Fake ingredients?
     - Probabilities of inclusion?
   - Clean/organize code
     - Top part with const defns looks ugly

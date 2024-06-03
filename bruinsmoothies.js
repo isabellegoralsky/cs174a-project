@@ -67,8 +67,8 @@ const BOMB_MATERIAL_1 = new Material(new Textured_Phong(), {
     texture: new Texture("assets/textures/bomb.jpg", "NEAREST")
 });
 
-const ICY_SPHERE_SHAPE = new defs.Subdivision_Sphere(4);
-const ICY_SPHERE_MATERIAL = new Material(new Textured_Phong(), {
+const FREEZE_SHAPE_1 = new defs.Subdivision_Sphere(4);
+const FREEZE_MATERIAL_1 = new Material(new Textured_Phong(), {
     color: hex_color("#000000"), // Light blue color to represent ice
     ambient: 1, diffusivity: 0.1, specularity: 0.8,
     texture: new Texture("assets/textures/icy.jpg", "NEAREST")
@@ -187,10 +187,10 @@ class Bomb extends Ingredient {
     }
 }
 
-class IcySphere extends Ingredient {
+class Freeze extends Ingredient {
     constructor(x_pos, y_pos, z_pos, x_spd, y_spd, z_spd) {
-        const shp = ICY_SPHERE_SHAPE;
-        const mat = ICY_SPHERE_MATERIAL;
+        const shp = FREEZE_SHAPE_1;
+        const mat = FREEZE_MATERIAL_1;
 
         super(x_pos, y_pos, z_pos, x_spd, y_spd, z_spd, 1, 1, shp, mat);
     }
@@ -226,9 +226,9 @@ export class BruinSmoothies extends Scene {
             "Banana": Banana,
             "Blueberry": Blueberry,
             "Cherry": Cherry,
-            
+
             "Bomb": Bomb,
-            "IcySphere": IcySphere,
+            "Freeze": Freeze,
         };
         this.recipes = {
             "Tropical Delight": ["Cherry", "Orange", "Apple"],
@@ -236,7 +236,7 @@ export class BruinSmoothies extends Scene {
             "Berry Blast":      ["Blueberry", "Blueberry", "Blueberry"]
         };
         
-        this.restart_level();
+        this.setup_game();
 
         document.addEventListener("mousedown", (e) => {
             e.preventDefault();
@@ -301,7 +301,7 @@ export class BruinSmoothies extends Scene {
     }
 
     restart_level() {
-        const total_ingr_count = 10;
+        const total_ingr_count = 15;
         const ingredient_list = [];
         const ingredient_names = Object.keys(this.ingredient_mapping);
 
@@ -325,7 +325,14 @@ export class BruinSmoothies extends Scene {
         this.recipe_name = random_recipe_name; // name of smoothie
         this.current_ingredients = [...recipe]; // list of string names of ingredients
         this.ingredients = ingredient_list; // list of ingredient objects
+        this.strikes = 0;
+        this.speed_mult *= 1.1;
+    }
+
+    setup_game() {
         this.score = 0;
+        this.speed_mult = 1.0 / 1.1;
+        this.restart_level();
     }
 
     draw_border(context, program_state) {
@@ -358,7 +365,7 @@ export class BruinSmoothies extends Scene {
           ingredient_transform = ingredient_transform.times(Mat4.translation(0, -2.5, 0));
       }
 
-      this.score_text.set_string(`Score: ${this.score}`, context.context);
+      this.score_text.set_string(`Score: ${this.score}, ${this.strikes}`, context.context);
       let score_transform = Mat4.identity()
           .times(Mat4.translation(this.width*1.5 - 20, -this.height / 2 - 0.3, -this.depth*1.5 + 2.5))
           .times(Mat4.rotation(-Math.PI / 2, 1, 0, 0))
@@ -394,7 +401,7 @@ export class BruinSmoothies extends Scene {
         const dist = Math.sqrt(x_dist * x_dist + y_dist * y_dist + z_dist * z_dist);
 
         if (dist < ingredient1.radius + ingredient2.radius) {
-            this.ding_sound.play();
+            //this.ding_sound.play();
 
             const normalX = x_dist / dist;
             const normalY = y_dist / dist;
@@ -475,17 +482,22 @@ export class BruinSmoothies extends Scene {
         for (let i = 0; i < this.ingredients.length; i++) {
             if (this.raySphereIntersection(ray, this.ingredients[i])) {
                 const ingredient_name = this.ingredients[i].constructor.name;
-                //can check for bomb and play explosion sound
-                if (ingredient_name === "IcySphere") {
+                if (ingredient_name === "Freeze") {
                     this.freezeIngredients();
                     this.freeze_sound.play();
+                } else if (ingredient_name === "Bomb") {
+                    this.strikes = 3;
+                    this.setup_game();
                 } else {
                     const index = this.current_ingredients.indexOf(ingredient_name);
                     if (index !== -1) {
                         this.score += 100;
                         this.current_ingredients.splice(index, 1);
                     } else {
-                        this.score -= 100;
+                        this.strikes += 1;
+                        if (this.strikes === 3) {
+                          this.setup_game();
+                        }
                     }
                     this.splash_sound.play();
                 }
@@ -522,9 +534,9 @@ export class BruinSmoothies extends Scene {
 
         for (let ingredient of this.ingredients) {
             let shape_mtx = model_transform;
-            let new_x = ingredient.center[0] + ingredient.direction[0];
-            let new_y = ingredient.center[1] + ingredient.direction[1];
-            let new_z = ingredient.center[2] + ingredient.direction[2];
+            let new_x = ingredient.center[0] + ingredient.direction[0]*this.speed_mult;
+            let new_y = ingredient.center[1] + ingredient.direction[1]*this.speed_mult;
+            let new_z = ingredient.center[2] + ingredient.direction[2]*this.speed_mult;
             shape_mtx = shape_mtx
                 .times(Mat4.translation(new_x, new_y, new_z))
                 .times(Mat4.scale(ingredient.radius, ingredient.radius, ingredient.radius));
@@ -539,7 +551,6 @@ export class BruinSmoothies extends Scene {
                     .times(Mat4.scale(1, 0.8984375, 1))
                     .times(Mat4.rotation(Math.PI / 2, 0, 1, 0));
             }
-
 
             ingredient.shape.draw(context, program_state, shape_mtx, ingredient.material);
 
