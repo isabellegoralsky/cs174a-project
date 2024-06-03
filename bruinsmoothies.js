@@ -225,12 +225,13 @@ export class BruinSmoothies extends Scene {
             "Orange": Orange,
             "Banana": Banana,
             "Blueberry": Blueberry,
+            "Cherry": Cherry,
+            
             "Bomb": Bomb,
             "IcySphere": IcySphere,
-            "Cherry": Cherry
         };
         this.recipes = {
-            "Tropical Delight": ["Banana", "Orange", "Apple"],
+            "Tropical Delight": ["Cherry", "Orange", "Apple"],
             "Watermelon Blast": ["Watermelon", "Apple", "Orange"],
             "Berry Blast":      ["Blueberry", "Blueberry", "Blueberry"]
         };
@@ -252,6 +253,11 @@ export class BruinSmoothies extends Scene {
 
         this.recipe_text = new Text_Line(50);
         this.score_text = new Text_Line(15);
+
+        this.ding_sound = new Audio('sounds/ding.mp3');
+        this.ding_sound.volume = 0.1;
+        this.splash_sound = new Audio('sounds/juicy-splash.mp3');
+        this.freeze_sound = new Audio('sounds/freeze.mp3');
     }
 
     random_number(min=0, max=1) {
@@ -295,7 +301,7 @@ export class BruinSmoothies extends Scene {
     }
 
     restart_level() {
-        const total_ingr_count = 15;
+        const total_ingr_count = 10;
         const ingredient_list = [];
         const ingredient_names = Object.keys(this.ingredient_mapping);
 
@@ -388,8 +394,7 @@ export class BruinSmoothies extends Scene {
         const dist = Math.sqrt(x_dist * x_dist + y_dist * y_dist + z_dist * z_dist);
 
         if (dist < ingredient1.radius + ingredient2.radius) {
-
-            this.play_sound('sounds/ding.mp3');
+            this.ding_sound.play();
 
             const normalX = x_dist / dist;
             const normalY = y_dist / dist;
@@ -470,11 +475,10 @@ export class BruinSmoothies extends Scene {
         for (let i = 0; i < this.ingredients.length; i++) {
             if (this.raySphereIntersection(ray, this.ingredients[i])) {
                 const ingredient_name = this.ingredients[i].constructor.name;
-                const index = this.current_ingredients.indexOf(ingredient_name);
                 //can check for bomb and play explosion sound
                 if (ingredient_name === "IcySphere") {
                     this.freezeIngredients();
-                    this.play_sound('sounds/freeze.mp3');
+                    this.freeze_sound.play();
                 } else {
                     const index = this.current_ingredients.indexOf(ingredient_name);
                     if (index !== -1) {
@@ -483,17 +487,12 @@ export class BruinSmoothies extends Scene {
                     } else {
                         this.score -= 100;
                     }
-                    this.play_sound('sounds/juicy-splash.mp3');
+                    this.splash_sound.play();
                 }
                 this.ingredients.splice(i, 1);
                 break;
             }
         }
-    }
-
-    play_sound(path) {
-        const audio = new Audio(path);
-        audio.play();
     }
 
     display(context, program_state) {

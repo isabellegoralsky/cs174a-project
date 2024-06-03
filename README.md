@@ -5,12 +5,11 @@ Welcome to the fruit stand! Our customers are thirsty, and they want their smoot
 ## TDL
 - Visuals
   - Fix models
-    - Fix hitboxes
-      - banana hard to click
     - Banana
-      - Looks weird
+      - Looks weird, also too small?
+      - Hard to click
     - Apple
-      - fix double specular
+      - Move 2 sides a little closer together, fix double specular
   - Add more fruits (peaches, strawberries, raspberries, blackberries, milk?)
     - Peaches could look similar to apples
   - Make ingredients spin a little?
@@ -18,18 +17,18 @@ Welcome to the fruit stand! Our customers are thirsty, and they want their smoot
 - Gameplay
   - Mouse picking kinda broken, hitbox/model sizing might be weird (or check radius)
   - Fix collisions
-    - Kinda go thru the wall rn
+    - Kinda go thru the wall rn (banana, watermelon?)
   - Create level progression system
     - Maintain score across levels
-    - 3 strikes and you're out
+    - 3 strikes and you're out (rotate text)
     - Speed up to make it harder
   - Improve recipes
-    - More variation (diff amounts, more fruits too, implement multiples of 1 fruit)
+    - More variation (diff amounts, more fruits too, implement multiples of 1 fruit - like x3)
     - Use control panel?
   - Fix bugs
-    - Error messages in console
-      - Audio.play()
-      - Laggy (fix 'new' creations)
+    - Laggy
+  - Sound
+    - Make ding when u get points? Or level up? And new sound for collision? Doesn't play pre-click?
   - Collision - speed up then decel? some randomness?
   - Level timer?
 - General
