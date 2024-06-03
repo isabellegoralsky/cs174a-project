@@ -11,7 +11,7 @@ Welcome to the fruit stand! Our customers are thirsty, and they want their smoot
       - Looks weird
     - Apple
       - Push 2 halves closer together, fix double specular
-  - Add more fruits (raspberries, strawberries, cherries, blackberries, milk?, peaches)
+  - Add more fruits (cherries, peaches, strawberries, raspberries, blackberries, milk?)
     - Peaches and cherries could look similar to apples, cherries smaller + in a pair?
   - Make ingredients spin a little?
   - Shadows?
@@ -21,6 +21,7 @@ Welcome to the fruit stand! Our customers are thirsty, and they want their smoot
     - Kinda go thru the wall rn
   - Create level progression system
     - Maintain score across levels
+    - 3 strikes and you're out
     - Speed up to make it harder
   - Improve recipes
     - More variation (diff amounts, more fruits too, implement multiples of 1 fruit)
@@ -37,5 +38,6 @@ Welcome to the fruit stand! Our customers are thirsty, and they want their smoot
     - Freeze that freezes screen for a bit (powerup)
     - Fake ingredients
     - Insta lose
+    - Probabilities of inclusion?
   - Clean/organize code
     - Top part with const defns looks ugly
