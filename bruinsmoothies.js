@@ -80,7 +80,7 @@ class Watermelon extends Ingredient {
         // const shp3 = WATERMELON_SHAPE_3;
         // const mat3 = WATERMELON_MATERIAL_3;
 
-        super(x_pos, y_pos, z_pos, x_spd, y_spd, z_spd, 1.3, 3, shp, mat);
+        super(x_pos, y_pos, z_pos, x_spd, y_spd, z_spd, 3.38, 3, shp, mat);
     }
 }
 
@@ -97,7 +97,7 @@ class Apple extends Ingredient {
         const shp3 = APPLE_SHAPE_3;
         const mat3 = APPLE_MATERIAL_3;
 
-        super(x_pos, y_pos, z_pos, x_spd, y_spd, z_spd, .75, 1, shp, mat, shp2, mat2, shp3, mat3);
+        super(x_pos, y_pos, z_pos, x_spd, y_spd, z_spd, 2.4, 1, shp, mat, shp2, mat2, shp3, mat3);
     }
 }
 
@@ -110,7 +110,7 @@ class Orange extends Ingredient {
         const shp2 = ORANGE_SHAPE_2;
         const mat2 = ORANGE_MATERIAL_2;
 
-        super(x_pos, y_pos, z_pos, x_spd, y_spd, z_spd, .75, 1.5, shp, mat, shp2, mat2);
+        super(x_pos, y_pos, z_pos, x_spd, y_spd, z_spd, 2.025, 1.5, shp, mat, shp2, mat2);
     }
 }
 
@@ -467,11 +467,8 @@ export class BruinSmoothies extends Scene {
 
             if (ingredient instanceof Watermelon) {
                 shape_mtx = shape_mtx
-                    .times(Mat4.scale(2.6, 2.6, 3.2))
+                    .times(Mat4.scale(1, 1, 1.23076923077))
                     .times(Mat4.rotation(3*Math.PI/4, 1, 0, 0));
-            }else if (ingredient instanceof Orange) {
-                // orange
-                shape_mtx = shape_mtx.times(Mat4.scale(2.7, 2.7, 2.7));
             }else if (ingredient instanceof Banana){
                 shape_mtx = shape_mtx.times(Mat4.scale(2, 1, 1));
             }
@@ -479,7 +476,7 @@ export class BruinSmoothies extends Scene {
             let shape_mtx_non_rotate = shape_mtx;
             if (ingredient instanceof Apple) {
                 shape_mtx = shape_mtx
-                    .times(Mat4.scale(3.2, 2.875, 3.2))
+                    .times(Mat4.scale(1, 0.8984375, 1))
                     .times(Mat4.rotation(Math.PI / 2, 0, 1, 0));
             }
 
@@ -492,7 +489,8 @@ export class BruinSmoothies extends Scene {
                 let leaf_transform = shape_mtx_non_rotate;
                 let leaf_offset = Mat4.identity();
                 if (ingredient instanceof Apple) {
-                    leaf_offset = Mat4.translation(0, 1.5, 0).times(Mat4.rotation(Math.PI / 2, 0, 0, 1));
+                    leaf_offset = leaf_offset.times(Mat4.scale(0.3125, 0.34782608695, 0.3125))
+                    leaf_offset = leaf_offset.times(Mat4.translation(0, 1.5, 0)).times(Mat4.rotation(Math.PI / 2, 0, 0, 1));
                     leaf_transform = leaf_transform.times(leaf_offset).times(Mat4.scale(.8, .8, .8));
                 } else if (ingredient instanceof Orange) {
                     // orange leaf
@@ -509,6 +507,7 @@ export class BruinSmoothies extends Scene {
                 let shp3_transform = shape_mtx_non_rotate;
                 if (ingredient instanceof Apple) {
                     // apple stem
+                    shp3_transform = shp3_transform.times(Mat4.scale(0.3125, 0.34782608695, 0.3125))
                     shp3_transform = shp3_transform.times(Mat4.translation(-.5, 2, 0)).times(Mat4.scale(.1, 1, .8));
                     ingredient.shape3.draw(context, program_state, shp3_transform, ingredient.material3);
                 } else {

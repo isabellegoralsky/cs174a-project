@@ -128,7 +128,7 @@ const AppleShape = custom_shapes.AppleShape = class AppleShape extends Shape {
         const halfApple2 = new custom_shapes.HalfApple();
 
         // Offset the second half to form the complete apple
-        const offset = Mat4.translation(0, 0, -0.5);
+        const offset = Mat4.translation(0, 0, -0.4);
 
         // Merge the first half apple vertices
         this.arrays.position.push(...halfApple1.arrays.position);
