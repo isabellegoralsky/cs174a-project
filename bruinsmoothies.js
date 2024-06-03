@@ -343,6 +343,11 @@ export class BruinSmoothies extends Scene {
         const half_width = this.width / 2;
         const half_height = this.height / 2;
         const half_depth = this.depth / 2;
+        const watermelon_rad = 4.16 / 2;
+
+        if (ingredient.center[2] - ingredient.radius <= -half_depth || ingredient.center[2] + ingredient.radius >= half_depth) {
+            ingredient.direction[2] *= -1;
+        }
 
         if (ingredient.center[0] - ingredient.radius <= -half_width || ingredient.center[0] + ingredient.radius >= half_width) {
             ingredient.direction[0] *= -1;
@@ -350,10 +355,6 @@ export class BruinSmoothies extends Scene {
 
         if (ingredient.center[1] - ingredient.radius <= -half_height || ingredient.center[1] + ingredient.radius >= half_height) {
             ingredient.direction[1] *= -1;
-        }
-
-        if (ingredient.center[2] - ingredient.radius <= -half_depth || ingredient.center[2] + ingredient.radius >= half_depth) {
-            ingredient.direction[2] *= -1;
         }
     }
 
@@ -506,11 +507,7 @@ export class BruinSmoothies extends Scene {
                 .times(Mat4.translation(new_x, new_y, new_z))
                 .times(Mat4.scale(ingredient.radius, ingredient.radius, ingredient.radius));
 
-            if (ingredient instanceof Watermelon) {
-                shape_mtx = shape_mtx
-                    .times(Mat4.scale(1, 1, 1.23076923077))
-                    .times(Mat4.rotation(3*Math.PI/4, 1, 0, 0));
-            }else if (ingredient instanceof Banana){
+            if (ingredient instanceof Banana){
                 shape_mtx = shape_mtx.times(Mat4.scale(2, 1, 1));
             }
 
