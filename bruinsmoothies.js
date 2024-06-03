@@ -10,26 +10,38 @@ const {
 
 const {Textured_Phong} = defs
 
-const WATERMELON_SHAPE_1 = new custom_shapes.HalfCircle();
-const WATERMELON_SHAPE_2 = new custom_shapes.HalfCircle();
-const WATERMELON_SHAPE_3 = new custom_shapes.Circle();
-const WATERMELON_MATERIAL_1 = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: .1, color: hex_color("#207c25")});
-const WATERMELON_MATERIAL_2 = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0, color: hex_color("#dc2c40")});
-const WATERMELON_MATERIAL_3 = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0, specularity: 0, color: hex_color("#000000")});
+const WATERMELON_SHAPE_1 = new defs.Subdivision_Sphere(4);
+const WATERMELON_MATERIAL_1 = new Material(new Textured_Phong(), {
+    color: hex_color("#000000"),
+    ambient: 1, diffusivity: 0.1, specularity: 0.3,
+    texture: new Texture("assets/textures/watermelon.png", "NEAREST")
+});
 const APPLE_SHAPE_1 = new custom_shapes.AppleShape();
 const APPLE_SHAPE_2 = new defs.Triangle();
 const APPLE_SHAPE_3 = new defs.Square();
-const APPLE_MATERIAL_1 = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: .9, color: hex_color("#ff0800")});
+const APPLE_MATERIAL_1 = new Material(new Textured_Phong(), {
+    color: hex_color("#000000"),
+    ambient: 1, diffusivity: 0.1, specularity: 0.4,
+    texture: new Texture("assets/textures/apple.jpg", "NEAREST")
+});
 const APPLE_MATERIAL_2 = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0.1, color: hex_color("#1F9A0E")});
 const APPLE_MATERIAL_3 = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0, color: hex_color("#594A4B")});
 const ORANGE_SHAPE_1 = new defs.Subdivision_Sphere(4);
 const ORANGE_SHAPE_2 = new defs.Triangle();
-const ORANGE_MATERIAL_1 = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0.3, color: hex_color("#ff8100")});
+const ORANGE_MATERIAL_1 = new Material(new Textured_Phong(), {
+    color: hex_color("#000000"),
+    ambient: 1, diffusivity: 0.1, specularity: 0.2,
+    texture: new Texture("assets/textures/orange.jpg", "NEAREST")
+});
 const ORANGE_MATERIAL_2 = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0.1, color: hex_color("#1F9A0E")});
 const BANANA_SHAPE_1 = new custom_shapes.BananaShape();
 const BANANA_MATERIAL_1 = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0.2, color: hex_color("#fdd835")});
 const BLUEBERRY_SHAPE_1 = new defs.Subdivision_Sphere(4);
-const BLUEBERRY_MATERIAL_1 = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0, color: hex_color("#2763dd")});
+const BLUEBERRY_MATERIAL_1 = new Material(new Textured_Phong(), {
+    color: hex_color("#000000"),
+    ambient: 1, diffusivity: 0.1, specularity: 0.2,
+    texture: new Texture("assets/textures/blueb.png", "NEAREST")
+});
 
 class Ingredient {
     constructor(x_pos, y_pos, z_pos, x_spd, y_spd, z_spd, rad, mas,
@@ -52,13 +64,13 @@ class Watermelon extends Ingredient {
         const shp = WATERMELON_SHAPE_1;
         const mat = WATERMELON_MATERIAL_1;
 
-        const shp2 = WATERMELON_SHAPE_2;
-        const mat2 = WATERMELON_MATERIAL_2;
+        // const shp2 = WATERMELON_SHAPE_2;
+        // const mat2 = WATERMELON_MATERIAL_2;
+        //
+        // const shp3 = WATERMELON_SHAPE_3;
+        // const mat3 = WATERMELON_MATERIAL_3;
 
-        const shp3 = WATERMELON_SHAPE_3;
-        const mat3 = WATERMELON_MATERIAL_3;
-
-        super(x_pos, y_pos, z_pos, x_spd, y_spd, z_spd, 1.3, 3, shp, mat, shp2, mat2, shp3, mat3);
+        super(x_pos, y_pos, z_pos, x_spd, y_spd, z_spd, 1.3, 3, shp, mat);
     }
 }
 
@@ -431,8 +443,8 @@ export class BruinSmoothies extends Scene {
 
             if (ingredient instanceof Watermelon) {
                 shape_mtx = shape_mtx
-                    .times(Mat4.scale(1.5, 1.5, 1.5))
-                    .times(Mat4.rotation(135, 0, 0, 1));
+                    .times(Mat4.scale(3, 3, 4))
+                    .times(Mat4.rotation(3*Math.PI/4, 1, 0, 0));
             }else if (ingredient instanceof Orange) {
                 // orange
                 shape_mtx = shape_mtx.times(Mat4.scale(3, 3, 3));
