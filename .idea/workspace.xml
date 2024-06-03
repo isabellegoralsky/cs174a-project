@@ -8,6 +8,9 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bruinsmoothies.js" beforeDir="false" afterPath="$PROJECT_DIR$/bruinsmoothies.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sounds/ding.mp3" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sounds/juicy-splash.mp3" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sounds/plsh.mp3" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -61,7 +64,7 @@
       <workItem from="1717433067975" duration="227000" />
       <workItem from="1717449036940" duration="109000" />
       <workItem from="1717451563559" duration="287000" />
-      <workItem from="1717452056878" duration="2927000" />
+      <workItem from="1717452056878" duration="4118000" />
     </task>
     <servers />
   </component>

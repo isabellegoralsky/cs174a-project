@@ -252,11 +252,16 @@ export class BruinSmoothies extends Scene {
         });
 
         this.recipe_text = new Text_Line(50);
-        this.score_text = new Text_Line(15);
+        this.score_text = new Text_Line(30);
 
-        this.ding_sound = new Audio('sounds/ding.mp3');
-        this.ding_sound.volume = 0.1;
-        this.splash_sound = new Audio('sounds/juicy-splash.mp3');
+        this.correct_sound = new Audio('sounds/correct.mp3');
+        this.correct_sound.volume = 0.5;
+        this.win_sound = new Audio('sounds/win.mp3');
+        this.win_sound.volume = 0.5;
+        this.incorrect_sound = new Audio('sounds/incorrect.mp3');
+        this.lose_sound = new Audio('sounds/lose.mp3');
+        this.explosion_sound = new Audio('sounds/explosion.mp3');
+        this.explosion_sound.volume = 0.5;
         this.freeze_sound = new Audio('sounds/freeze.mp3');
     }
 
@@ -349,30 +354,36 @@ export class BruinSmoothies extends Scene {
     }
 
     draw_text(context, program_state) {
-      this.recipe_text.set_string(`Recipe: ${this.recipe_name}`, context.context);
-      let recipe_transform = Mat4.identity()
-          .times(Mat4.translation(-this.width*1.5 + 2.5, -this.height / 2 - 0.3, -this.depth*1.5 + 2.5))
-          .times(Mat4.rotation(-Math.PI / 2, 1, 0, 0));
-      this.recipe_text.draw(context, program_state, recipe_transform.times(Mat4.rotation(20,1,0,0))
-          .times(Mat4.translation(4,1,9)), this.text_material);
+        this.recipe_text.set_string(`Recipe: ${this.recipe_name}`, context.context);
+        let recipe_transform = Mat4.identity()
+            .times(Mat4.translation(-this.width*1.5 + 2.5, -this.height / 2 - 0.3, -this.depth*1.5 + 2.5))
+            .times(Mat4.rotation(-Math.PI / 2, 1, 0, 0));
+        this.recipe_text.draw(context, program_state, recipe_transform.times(Mat4.rotation(20,1,0,0))
+            .times(Mat4.translation(4,1,9)), this.text_material);
 
-      let ingredient_transform = recipe_transform
-          .times(Mat4.translation(0, -5, 0));
-      for (let ingredient of this.current_ingredients) {
-          this.recipe_text.set_string(ingredient, context.context);
-          this.recipe_text.draw(context, program_state, ingredient_transform.times(Mat4.rotation(20,1,0,0))
-              .times(Mat4.translation(6,1,10)), this.text_material);
-          ingredient_transform = ingredient_transform.times(Mat4.translation(0, -2.5, 0));
-      }
+        let ingredient_transform = recipe_transform
+            .times(Mat4.translation(0, -5, 0));
+        for (let ingredient of this.current_ingredients) {
+            this.recipe_text.set_string(ingredient, context.context);
+            this.recipe_text.draw(context, program_state, ingredient_transform.times(Mat4.rotation(20,1,0,0))
+                .times(Mat4.translation(6,1,10)), this.text_material);
+            ingredient_transform = ingredient_transform.times(Mat4.translation(0, -2.5, 0));
+        }
 
-      this.score_text.set_string(`Score: ${this.score}, ${this.strikes}`, context.context);
-      let score_transform = Mat4.identity()
-          .times(Mat4.translation(this.width*1.5 - 20, -this.height / 2 - 0.3, -this.depth*1.5 + 2.5))
-          .times(Mat4.rotation(-Math.PI / 2, 1, 0, 0))
-          .times(Mat4.scale(1.3, 1, 1.3))
-          .times(Mat4.rotation(20,1,0,0))
-          .times(Mat4.translation(-2,1,10));
-      this.score_text.draw(context, program_state, score_transform, this.text_material);
+        this.score_text.set_string(`Score: ${this.score}`, context.context);
+        let score_transform = Mat4.identity()
+            .times(Mat4.translation(this.width*1.5 - 20, -this.height / 2 - 0.3, -this.depth*1.5 + 2.5))
+            .times(Mat4.rotation(-Math.PI / 2, 1, 0, 0))
+            .times(Mat4.scale(1.3, 1, 1.3));
+        this.score_text.draw(context, program_state, score_transform.times(Mat4.rotation(20,1,0,0))
+            .times(Mat4.translation(-2,1,10)), this.text_material);
+
+        this.score_text.set_string(`Strikes: ${this.strikes}`, context.context);
+        let strikes_transform = score_transform
+            .times(Mat4.translation(0, -5, 0))
+            .times(Mat4.rotation(20,1,0,0))
+            .times(Mat4.translation(6,1,10));
+        this.score_text.draw(context, program_state, strikes_transform, this.text_material);
     }
 
     check_wall_collision(ingredient) {
@@ -401,8 +412,6 @@ export class BruinSmoothies extends Scene {
         const dist = Math.sqrt(x_dist * x_dist + y_dist * y_dist + z_dist * z_dist);
 
         if (dist < ingredient1.radius + ingredient2.radius) {
-            //this.ding_sound.play();
-
             const normalX = x_dist / dist;
             const normalY = y_dist / dist;
             const normalZ = z_dist / dist;
@@ -466,15 +475,17 @@ export class BruinSmoothies extends Scene {
     }
 
     freezeIngredients() {
+        this.freeze_sound.play();
+
         for (let ingredient of this.ingredients) {
-            ingredient.frozenDirection = ingredient.direction; // Save current direction
-            ingredient.direction = vec3(0, 0, 0); // Stop movement
+            ingredient.frozenDirection = ingredient.direction; // save dir
+            ingredient.direction = vec3(0, 0, 0); // stop moving
         }
         setTimeout(() => {
             for (let ingredient of this.ingredients) {
-                ingredient.direction = ingredient.frozenDirection; // Restore direction
+                ingredient.direction = ingredient.frozenDirection; // restore dir after timeout
             }
-        }, 1500); // Freeze for 1.5 seconds
+        }, 1500); // 1.5s
     }
 
     pickIngredient(mouse_x, mouse_y) {
@@ -484,22 +495,24 @@ export class BruinSmoothies extends Scene {
                 const ingredient_name = this.ingredients[i].constructor.name;
                 if (ingredient_name === "Freeze") {
                     this.freezeIngredients();
-                    this.freeze_sound.play();
                 } else if (ingredient_name === "Bomb") {
-                    this.strikes = 3;
+                    this.explosion_sound.play();
                     this.setup_game();
                 } else {
                     const index = this.current_ingredients.indexOf(ingredient_name);
                     if (index !== -1) {
                         this.score += 100;
                         this.current_ingredients.splice(index, 1);
+                        this.correct_sound.play();
                     } else {
                         this.strikes += 1;
                         if (this.strikes === 3) {
+                          this.lose_sound.play();
                           this.setup_game();
+                        } else {
+                          this.incorrect_sound.play();
                         }
                     }
-                    this.splash_sound.play();
                 }
                 this.ingredients.splice(i, 1);
                 break;
@@ -620,6 +633,7 @@ export class BruinSmoothies extends Scene {
         }
 
         if (this.current_ingredients.length === 0) {
+            this.win_sound.play();
             this.restart_level();
         }
     }
