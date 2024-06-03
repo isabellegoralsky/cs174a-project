@@ -17,7 +17,7 @@ const WATERMELON_MATERIAL_1 = new Material(new Textured_Phong(), {
     texture: new Texture("assets/textures/watermelon.png", "NEAREST")
 });
 
-const APPLE_SHAPE_1 = new custom_shapes.AppleShape();
+const APPLE_SHAPE_1 = new custom_shapes.AppleShape(-0.4);
 const APPLE_SHAPE_2 = new defs.Triangle();
 const APPLE_SHAPE_3 = new defs.Square();
 const APPLE_MATERIAL_1 = new Material(new Textured_Phong(), {
@@ -27,6 +27,15 @@ const APPLE_MATERIAL_1 = new Material(new Textured_Phong(), {
 });
 const APPLE_MATERIAL_2 = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0.1, color: hex_color("#1F9A0E")});
 const APPLE_MATERIAL_3 = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0, color: hex_color("#594A4B")});
+
+const CHERRY_SHAPE_1 = new custom_shapes.AppleShape(-0.65);
+const CHERRY_MATERIAL_1 = new Material(new Textured_Phong(), {
+    color: hex_color("#000000"),
+    ambient: 1, diffusivity: 0.1, specularity: 1,
+    texture: new Texture("assets/textures/cherry.jpeg", "NEAREST")
+});
+const CHERRY_SHAPE_2 = new defs.Square();
+const CHERRY_MATERIAL_2 = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0, color: hex_color("#037a10")});
 
 const ORANGE_SHAPE_1 = new defs.Subdivision_Sphere(4);
 const ORANGE_SHAPE_2 = new defs.Triangle();
@@ -110,6 +119,19 @@ class Apple extends Ingredient {
         const mat3 = APPLE_MATERIAL_3;
 
         super(x_pos, y_pos, z_pos, x_spd, y_spd, z_spd, 2.4, 1, shp, mat, shp2, mat2, shp3, mat3);
+    }
+}
+
+class Cherry extends Ingredient {
+    constructor(x_pos, y_pos, z_pos, x_spd, y_spd, z_spd) {
+        const shp = CHERRY_SHAPE_1;
+        const mat = CHERRY_MATERIAL_1;
+
+        //stem
+        const shp2 = CHERRY_SHAPE_2;
+        const mat2 = CHERRY_MATERIAL_2;
+
+        super(x_pos, y_pos, z_pos, x_spd, y_spd, z_spd, 1.2, .65, shp, mat, shp2, mat2);
     }
 }
 
@@ -204,7 +226,8 @@ export class BruinSmoothies extends Scene {
             "Banana": Banana,
             "Blueberry": Blueberry,
             "Bomb": Bomb,
-            "IcySphere": IcySphere
+            "IcySphere": IcySphere,
+            "Cherry": Cherry
         };
         this.recipes = {
             "Tropical Delight": ["Banana", "Orange", "Apple"],
@@ -512,7 +535,7 @@ export class BruinSmoothies extends Scene {
             }
 
             let shape_mtx_non_rotate = shape_mtx;
-            if (ingredient instanceof Apple) {
+            if (ingredient instanceof Apple || ingredient instanceof Cherry) {
                 shape_mtx = shape_mtx
                     .times(Mat4.scale(1, 0.8984375, 1))
                     .times(Mat4.rotation(Math.PI / 2, 0, 1, 0));
@@ -534,11 +557,28 @@ export class BruinSmoothies extends Scene {
                     // orange leaf
                     leaf_offset = Mat4.translation(0, 0.5, 0).times(Mat4.rotation(Math.PI / 3, 0, 0, 1)).times(Mat4.rotation(Math.PI / 3, 0, 1, 0));
                     leaf_transform = leaf_transform.times(leaf_offset).times(Mat4.scale(1.2, .5, 1.8));
-                } else {
+                } else if (ingredient instanceof Cherry) {
+                    // cherry stem 1
+                    leaf_transform = leaf_transform
+                        .times(Mat4.translation(-.6, .8, -.3))
+                        .times(Mat4.rotation(-Math.PI/8, 1,0,0))
+                        .times(Mat4.rotation(-Math.PI/16, 0,0,1))
+                        .times(Mat4.scale(.05, 1.5, .8));
+                }else {
                     leaf_transform = leaf_transform.times(Mat4.scale(.9, .9, 1)).times(Mat4.translation(0, 0, .0001));
                 }
 
                 ingredient.shape2.draw(context, program_state, leaf_transform, ingredient.material2);
+
+                if (ingredient instanceof Cherry) {
+                    leaf_transform = shape_mtx_non_rotate
+                        .times(Mat4.translation(-.6, .8, -.3))
+                        .times(Mat4.rotation(-Math.PI/8, 1,0,0))
+                        .times(Mat4.rotation(Math.PI/16, 0,0,1))
+                        .times(Mat4.scale(.05, 1.5, .8))
+                        .times(Mat4.translation(8,0,0)) ;
+                }
+                ingredient.shape2.draw(context, program_state, leaf_transform, ingredient.material2); 
             }
 
             if (ingredient.shape3 !== null) {

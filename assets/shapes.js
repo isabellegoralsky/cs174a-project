@@ -121,14 +121,14 @@ const HalfApple = custom_shapes.HalfApple = class HalfApple extends Shape {
 }
 
 const AppleShape = custom_shapes.AppleShape = class AppleShape extends Shape {
-    constructor() {
+    constructor(off) {
         super("position", "normal", "texture_coord");
 
         const halfApple1 = new custom_shapes.HalfApple();
         const halfApple2 = new custom_shapes.HalfApple();
 
         // Offset the second half to form the complete apple
-        const offset = Mat4.translation(0, 0, -0.4);
+        const offset = Mat4.translation(0, 0, off);
 
         // Merge the first half apple vertices
         this.arrays.position.push(...halfApple1.arrays.position);
