@@ -6,13 +6,13 @@ Welcome to the fruit stand! Our customers are thirsty, and they want their smoot
 - Visuals
   - Fix models
     - Fix hitboxes
-      - Watermelon & banana hard to click
+      - banana hard to click
     - Banana
       - Looks weird
     - Apple
-      - Push 2 halves closer together, fix double specular
-  - Add more fruits (cherries, peaches, strawberries, raspberries, blackberries, milk?)
-    - Peaches and cherries could look similar to apples, cherries smaller + in a pair?
+      - fix double specular
+  - Add more fruits (peaches, strawberries, raspberries, blackberries, milk?)
+    - Peaches could look similar to apples
   - Make ingredients spin a little?
   - Shadows?
 - Gameplay
