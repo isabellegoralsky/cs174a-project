@@ -35,7 +35,11 @@ const ORANGE_MATERIAL_1 = new Material(new Textured_Phong(), {
 });
 const ORANGE_MATERIAL_2 = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0.1, color: hex_color("#1F9A0E")});
 const BANANA_SHAPE_1 = new custom_shapes.BananaShape();
-const BANANA_MATERIAL_1 = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0.2, color: hex_color("#fdd835")});
+const BANANA_MATERIAL_1 = new Material(new Textured_Phong(), {
+    color: hex_color("#000000"),
+    ambient: 1, diffusivity: 0.1, specularity: 0.2,
+    texture: new Texture("assets/textures/banana.jpg", "NEAREST")
+});
 const BLUEBERRY_SHAPE_1 = new defs.Subdivision_Sphere(4);
 const BLUEBERRY_MATERIAL_1 = new Material(new Textured_Phong(), {
     color: hex_color("#000000"),
@@ -443,11 +447,13 @@ export class BruinSmoothies extends Scene {
 
             if (ingredient instanceof Watermelon) {
                 shape_mtx = shape_mtx
-                    .times(Mat4.scale(3, 3, 4))
+                    .times(Mat4.scale(2.6, 2.6, 3.2))
                     .times(Mat4.rotation(3*Math.PI/4, 1, 0, 0));
             }else if (ingredient instanceof Orange) {
                 // orange
-                shape_mtx = shape_mtx.times(Mat4.scale(3, 3, 3));
+                shape_mtx = shape_mtx.times(Mat4.scale(2.7, 2.7, 2.7));
+            }else if (ingredient instanceof Banana){
+                shape_mtx = shape_mtx.times(Mat4.scale(2, 1, 1));
             }
 
             let shape_mtx_non_rotate = shape_mtx;
