@@ -28,6 +28,14 @@ const APPLE_MATERIAL_1 = new Material(new Textured_Phong(), {
 const APPLE_MATERIAL_2 = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0.1, color: hex_color("#1F9A0E")});
 const APPLE_MATERIAL_3 = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0, color: hex_color("#594A4B")});
 
+const PEACH_SHAPE_1 = new custom_shapes.AppleShape(-0.5);
+const PEACH_MATERIAL_1 = new Material(new Textured_Phong(), {
+    color: hex_color("#000000"),
+    ambient: 1, diffusivity: 0.1, specularity: 0,
+    texture: new Texture("assets/textures/peach.jpeg", "NEAREST")
+});
+const PEACH_MATERIAL_2 = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0.1, color: hex_color("#0fa100")});
+
 const CHERRY_SHAPE_1 = new custom_shapes.AppleShape(-0.65);
 const CHERRY_MATERIAL_1 = new Material(new Textured_Phong(), {
     color: hex_color("#000000"),
@@ -126,6 +134,18 @@ class Apple extends Ingredient {
         const mat3 = APPLE_MATERIAL_3;
 
         super(x_pos, y_pos, z_pos, x_spd, y_spd, z_spd, 2.4, 1, shp, mat, shp2, mat2, shp3, mat3);
+    }
+}
+
+class Peach extends Ingredient {
+    constructor(x_pos, y_pos, z_pos, x_spd, y_spd, z_spd) {
+        const shp = PEACH_SHAPE_1;
+        const mat = PEACH_MATERIAL_1;
+
+        const shp2 = ORANGE_SHAPE_2;
+        const mat2 = PEACH_MATERIAL_2;
+
+        super(x_pos, y_pos, z_pos, x_spd, y_spd, z_spd, 2, 1, shp, mat, shp2, mat2);
     }
 }
 
@@ -231,6 +251,7 @@ export class BruinSmoothies extends Scene {
             "Blueberry": Blueberry,
             "Cranberry": Cranberry,
             "Cherry": Cherry,
+            "Peach": Peach,
 
             "Bomb": Bomb,
             "Freeze": Freeze,
@@ -565,7 +586,7 @@ export class BruinSmoothies extends Scene {
             }
 
             let shape_mtx_non_rotate = shape_mtx;
-            if (ingredient instanceof Apple || ingredient instanceof Cherry) {
+            if (ingredient instanceof Apple || ingredient instanceof Cherry || ingredient instanceof Peach) {
                 shape_mtx = shape_mtx
                     .times(Mat4.scale(1, 0.8984375, 1))
                     .times(Mat4.rotation(Math.PI / 2, 0, 1, 0));
@@ -586,6 +607,11 @@ export class BruinSmoothies extends Scene {
                     // orange leaf
                     leaf_offset = Mat4.translation(0, 0.5, 0).times(Mat4.rotation(Math.PI / 3, 0, 0, 1)).times(Mat4.rotation(Math.PI / 3, 0, 1, 0));
                     leaf_transform = leaf_transform.times(leaf_offset).times(Mat4.scale(1.2, .5, 1.8));
+                } else if (ingredient instanceof Peach){
+
+                    leaf_offset = Mat4.translation(0, 0.5, 0).times(Mat4.rotation(Math.PI / 3, 0, 0, 1)).times(Mat4.rotation(Math.PI / 3, 0, 1, 0));
+                    //leaf_transform = leaf_transform.times(leaf_offset).times(Mat4.scale(.7, .5, 1.8));
+                    leaf_transform = leaf_transform.times(leaf_offset).times(Mat4.scale(.2, .5, 1));
                 } else if (ingredient instanceof Cherry) {
                     // cherry stem 1
                     leaf_transform = leaf_transform
@@ -606,8 +632,9 @@ export class BruinSmoothies extends Scene {
                         .times(Mat4.rotation(Math.PI/16, 0,0,1))
                         .times(Mat4.scale(.05, 1.5, .8))
                         .times(Mat4.translation(8,0,0)) ;
+                    ingredient.shape2.draw(context, program_state, leaf_transform, ingredient.material2);
                 }
-                ingredient.shape2.draw(context, program_state, leaf_transform, ingredient.material2); 
+
             }
 
             if (ingredient.shape3 !== null) {
