@@ -17,12 +17,12 @@ const WATERMELON_MATERIAL_1 = new Material(new Textured_Phong(), {
     texture: new Texture("assets/textures/watermelon.png", "NEAREST")
 });
 
-const APPLE_SHAPE_1 = new custom_shapes.AppleShape(-0.4);
+const APPLE_SHAPE_1 = new custom_shapes.AppleShape(-0.3);
 const APPLE_SHAPE_2 = new defs.Triangle();
 const APPLE_SHAPE_3 = new defs.Square();
 const APPLE_MATERIAL_1 = new Material(new Textured_Phong(), {
     color: hex_color("#000000"),
-    ambient: 1, diffusivity: 0.1, specularity: 0.4,
+    ambient: 1, diffusivity: 0.1, specularity: 0.2,
     texture: new Texture("assets/textures/apple.jpg", "NEAREST")
 });
 const APPLE_MATERIAL_2 = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0.1, color: hex_color("#1F9A0E")});
@@ -63,8 +63,8 @@ const BLUEBERRY_MATERIAL_1 = new Material(new Textured_Phong(), {
 const CRANBERRY_SHAPE_1 = new defs.Subdivision_Sphere(4);
 const CRANBERRY_MATERIAL_1 = new Material(new Textured_Phong(), {
     color: hex_color("#000000"),
-    ambient: 1, diffusivity: 0.1, specularity: 0.2,
-    texture: new Texture("assets/textures/cranb.jpg", "NEAREST")
+    ambient: 1, diffusivity: 0.1, specularity: 0.8,
+    texture: new Texture("assets/textures/cranberry.jpeg", "NEAREST")
 });
 
 const BOMB_SHAPE_1 = new defs.Subdivision_Sphere(4);
