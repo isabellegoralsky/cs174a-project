@@ -268,7 +268,7 @@ export class BruinSmoothies extends Scene {
         this.incorrect_sound = new Audio('sounds/incorrect.mp3');
         this.lose_sound = new Audio('sounds/lose.mp3');
         this.explosion_sound = new Audio('sounds/explosion.mp3');
-        this.explosion_sound.volume = 0.5;
+        this.explosion_sound.volume = 0.3;
         this.freeze_sound = new Audio('sounds/freeze.mp3');
     }
 
@@ -363,33 +363,32 @@ export class BruinSmoothies extends Scene {
     draw_text(context, program_state) {
         this.recipe_text.set_string(`Recipe: ${this.recipe_name}`, context.context);
         let recipe_transform = Mat4.identity()
-            .times(Mat4.translation(-this.width*1.5 + 2.5, -this.height / 2 - 0.3, -this.depth*1.5 + 2.5))
-            .times(Mat4.rotation(-Math.PI / 2, 1, 0, 0));
-        this.recipe_text.draw(context, program_state, recipe_transform.times(Mat4.rotation(20,1,0,0))
-            .times(Mat4.translation(4,1,9)), this.text_material);
+            .times(Mat4.translation(-this.width*1.5 + 3.5, -this.height / 2 + 0.7, -this.depth*1.5 + 3.5))
+            .times(Mat4.rotation(-Math.PI / 2 + 20, 1, 0, 0));
+        this.recipe_text.draw(context, program_state, recipe_transform, this.text_material);
 
         let ingredient_transform = recipe_transform
-            .times(Mat4.translation(0, -5, 0));
         for (let ingredient of this.current_ingredients) {
             this.recipe_text.set_string(ingredient, context.context);
-            this.recipe_text.draw(context, program_state, ingredient_transform.times(Mat4.rotation(20,1,0,0))
-                .times(Mat4.translation(6,1,10)), this.text_material);
-            ingredient_transform = ingredient_transform.times(Mat4.translation(0, -2.5, 0));
+            ingredient_transform = ingredient_transform
+                .times(Mat4.rotation(-20, 1, 0, 0))
+                .times(Mat4.translation(0, -3, 0))
+                .times(Mat4.rotation(20, 1, 0, 0));
+            this.recipe_text.draw(context, program_state, ingredient_transform, this.text_material);
         }
 
         this.score_text.set_string(`Score: ${this.score}`, context.context);
         let score_transform = Mat4.identity()
-            .times(Mat4.translation(this.width*1.5 - 20, -this.height / 2 - 0.3, -this.depth*1.5 + 2.5))
-            .times(Mat4.rotation(-Math.PI / 2, 1, 0, 0))
-            .times(Mat4.scale(1.3, 1, 1.3));
-        this.score_text.draw(context, program_state, score_transform.times(Mat4.rotation(20,1,0,0))
-            .times(Mat4.translation(-2,1,10)), this.text_material);
+            .times(Mat4.translation(this.width*1.5 - 17, -this.height / 2 + 0.7, -this.depth*1.5 + 3.5))
+            .times(Mat4.rotation(-Math.PI / 2 + 20, 1, 0, 0))
+            .times(Mat4.scale(1.2, 1.2, 1.2));
+        this.score_text.draw(context, program_state, score_transform, this.text_material);
 
         this.score_text.set_string(`Strikes: ${this.strikes}`, context.context);
         let strikes_transform = score_transform
-            .times(Mat4.translation(0, -5, 0))
-            .times(Mat4.rotation(20,1,0,0))
-            .times(Mat4.translation(6,1,10));
+            .times(Mat4.rotation(-20, 1, 0, 0))
+            .times(Mat4.translation(-2, -4, 0))
+            .times(Mat4.rotation(20, 1, 0, 0));
         this.score_text.draw(context, program_state, strikes_transform, this.text_material);
     }
 
