@@ -60,6 +60,13 @@ const BLUEBERRY_MATERIAL_1 = new Material(new Textured_Phong(), {
     texture: new Texture("assets/textures/blueb.png", "NEAREST")
 });
 
+const CRANBERRY_SHAPE_1 = new defs.Subdivision_Sphere(4);
+const CRANBERRY_MATERIAL_1 = new Material(new Textured_Phong(), {
+    color: hex_color("#000000"),
+    ambient: 1, diffusivity: 0.1, specularity: 0.2,
+    texture: new Texture("assets/textures/cranb.jpg", "NEAREST")
+});
+
 const BOMB_SHAPE_1 = new defs.Subdivision_Sphere(4);
 const BOMB_MATERIAL_1 = new Material(new Textured_Phong(), {
     color: hex_color("#000000"),
@@ -148,34 +155,31 @@ class Orange extends Ingredient {
     }
 }
 
-// Banana looks a little weird in 3D, need to move camera angle, so it looks normal
 class Banana extends Ingredient {
     constructor(x_pos, y_pos, z_pos, x_spd, y_spd, z_spd) {
         const shp = BANANA_SHAPE_1;
         const mat = BANANA_MATERIAL_1;
 
-        super(x_pos, y_pos, z_pos, x_spd, y_spd, z_spd, 0.6, 2, shp, mat);
-
-        this.rotation = 0;
-    }
-
-    draw(context, program_state, model_transform) {
-        // Draw the banana with rotation
-        let shape_mtx = model_transform
-            .times(Mat4.translation(this.center[0], this.center[1], this.center[2]))
-            .times(Mat4.rotation(this.rotation, 1, 0, 0))
-            .times(Mat4.scale(this.radius, this.radius, this.radius));
-        this.shape.draw(context, program_state, shape_mtx, this.material);
+        super(x_pos, y_pos, z_pos, x_spd, y_spd, z_spd, 1, 2, shp, mat);
     }
 }
 
 class Blueberry extends Ingredient {
-  constructor(x_pos, y_pos, z_pos, x_spd, y_spd, z_spd) {
-      const shp = BLUEBERRY_SHAPE_1;
-      const mat = BLUEBERRY_MATERIAL_1;
+    constructor(x_pos, y_pos, z_pos, x_spd, y_spd, z_spd) {
+        const shp = BLUEBERRY_SHAPE_1;
+        const mat = BLUEBERRY_MATERIAL_1;
 
-      super(x_pos, y_pos, z_pos, x_spd, y_spd, z_spd, .5, .5, shp, mat);
-  }
+        super(x_pos, y_pos, z_pos, x_spd, y_spd, z_spd, .5, .5, shp, mat);
+    }
+}
+
+class Cranberry extends Ingredient {
+    constructor(x_pos, y_pos, z_pos, x_spd, y_spd, z_spd) {
+        const shp = CRANBERRY_SHAPE_1;
+        const mat = CRANBERRY_MATERIAL_1;
+
+        super(x_pos, y_pos, z_pos, x_spd, y_spd, z_spd, .5, .5, shp, mat);
+    }
 }
 
 class Bomb extends Ingredient {
@@ -225,6 +229,7 @@ export class BruinSmoothies extends Scene {
             "Orange": Orange,
             "Banana": Banana,
             "Blueberry": Blueberry,
+            "Cranberry": Cranberry,
             "Cherry": Cherry,
 
             "Bomb": Bomb,
@@ -234,8 +239,8 @@ export class BruinSmoothies extends Scene {
             "Citrus Splash":  ["Orange", "Orange", "Apple", "Banana"],
             "Berry Blast":    ["Blueberry", "Blueberry", "Cherry", "Watermelon", "Banana"],
             "Cherry Bomb":    ["Cherry", "Cherry", "Blueberry", "Orange"],
+            "Cran-apple":     ["Apple", "Apple", "Cranberry", "Cranberry"]
             // Strawnana
-            // Cran-apple
         };
         
         this.setup_game();

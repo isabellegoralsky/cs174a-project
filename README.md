@@ -5,6 +5,8 @@ Welcome to the fruit stand! Our customers are thirsty, and they want their smoot
 ## TDL
 - Visuals
   - Fix models
+    - Cranberry
+      - Texture not displaying
     - Banana
       - Looks weird, also too small?
       - Hard to click
@@ -12,9 +14,9 @@ Welcome to the fruit stand! Our customers are thirsty, and they want their smoot
       - Move 2 sides a little closer together
       - Fix double specular
   - Add more fruits
-    - Cranberries = blueberries but red
     - Peaches could look similar to apples
     - Strawberries, kiwis, raspberries, blackberries
+  - Put correct fruit outside on the ground or something? Maybe on chopping board
   - Shadows?
   - Make ingredients spin a little?
 - Gameplay
@@ -33,7 +35,6 @@ Welcome to the fruit stand! Our customers are thirsty, and they want their smoot
     - Multiples as x2?
     - Use control panel?
     - Probability of ingredient inclusion?
-  - Put correct fruit outside on the ground or something?
   - Level system
     - You lost! popup?
     - Change speedup amount?
