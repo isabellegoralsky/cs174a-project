@@ -5,8 +5,7 @@ Welcome to the fruit stand! Our customers are thirsty, and they want their smoot
 ## TDL
 - Visuals
   - Fix board thing
-    - Add texture idk why its not working
-    - Make the shapes look how theyr're supposed to
+    - Make the shapes look how they're supposed to
   - Add more fruits
     - Strawberries, raspberries, blackberries
   - Fix models
@@ -28,7 +27,7 @@ Welcome to the fruit stand! Our customers are thirsty, and they want their smoot
       - Mem leaks?
     - Crash on generating '0' in line 611 col 68??
   - Fix collisions
-    - Kinda go thru the wall rn (banana, watermelon? spawns outside)
+    - Kinda go thru the wall rn (banana, spawns outside)
     - Sometimes randomly start orbiting each other
   - Improve recipes
     - More variation in amounts/ingredients, once we have more fruit

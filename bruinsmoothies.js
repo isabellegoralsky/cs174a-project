@@ -132,13 +132,7 @@ class Watermelon extends Ingredient {
         const shp = WATERMELON_SHAPE_1;
         const mat = WATERMELON_MATERIAL_1;
 
-        // const shp2 = WATERMELON_SHAPE_2;
-        // const mat2 = WATERMELON_MATERIAL_2;
-        //
-        // const shp3 = WATERMELON_SHAPE_3;
-        // const mat3 = WATERMELON_MATERIAL_3;
-
-        super(x_pos, y_pos, z_pos, x_spd, y_spd, z_spd, 3.38, 3, shp, mat);
+        super(x_pos, y_pos, z_pos, x_spd, y_spd, z_spd, 3, 3, shp, mat);
     }
 }
 
@@ -229,7 +223,7 @@ class Raspberry extends Ingredient {
         const shp = RASPBERRY_SHAPE_1;
         const mat = RASPBERRY_MATERIAL_1;
 
-        super(x_pos, y_pos, z_pos, x_spd, y_spd, z_spd, .75, .5, shp, mat);
+        super(x_pos, y_pos, z_pos, x_spd, y_spd, z_spd, 1.5, .5, shp, mat);
     }
 }
 
@@ -434,9 +428,10 @@ export class BruinSmoothies extends Scene {
         this.floor_shape.draw(context, program_state, floor_transform, this.floor_material);
 
         const board_transform = Mat4.identity()
-            .times(Mat4.translation(30, -this.height / 2 - 0.3, 0))
+            .times(Mat4.translation(0, -this.height / 2 - 0.1, 0))
             .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
-            .times(Mat4.scale(10, 20, 1));
+            .times(Mat4.translation(0,20,0))
+            .times(Mat4.scale(15, 3, 1));
         this.board_shape.draw(context, program_state, board_transform, this.board_material);
 
         const shape_mtx = Mat4.identity();
@@ -444,6 +439,7 @@ export class BruinSmoothies extends Scene {
             let ingr_mtx = shape_mtx
                 .times(Mat4.translation(ingredient.center[0], ingredient.center[1], ingredient.center[2]))
                 .times(Mat4.scale(ingredient.radius, ingredient.radius, ingredient.radius));
+
             ingredient.shape.draw(context, program_state, ingr_mtx, ingredient.material);
         }
     }
@@ -484,7 +480,6 @@ export class BruinSmoothies extends Scene {
         const half_width = this.width / 2;
         const half_height = this.height / 2;
         const half_depth = this.depth / 2;
-        const watermelon_rad = 4.16 / 2;
 
         if (ingredient.center[2] - ingredient.radius <= -half_depth || ingredient.center[2] + ingredient.radius >= half_depth) {
             ingredient.direction[2] *= -1;
@@ -652,14 +647,14 @@ export class BruinSmoothies extends Scene {
 
         for (let ingredient of this.ingredients) {
             let shape_mtx = model_transform;
-            let new_x = ingredient.center[0] + ingredient.direction[0]*this.speed_mult;
-            let new_y = ingredient.center[1] + ingredient.direction[1]*this.speed_mult;
-            let new_z = ingredient.center[2] + ingredient.direction[2]*this.speed_mult;
+            let new_x = ingredient.center[0] + ingredient.direction[0] * this.speed_mult;
+            let new_y = ingredient.center[1] + ingredient.direction[1] * this.speed_mult;
+            let new_z = ingredient.center[2] + ingredient.direction[2] * this.speed_mult;
             shape_mtx = shape_mtx
                 .times(Mat4.translation(new_x, new_y, new_z))
                 .times(Mat4.scale(ingredient.radius, ingredient.radius, ingredient.radius));
 
-            if (ingredient instanceof Banana){
+            if (ingredient instanceof Banana) {
                 shape_mtx = shape_mtx.times(Mat4.scale(2, 1, 1));
             }
 
@@ -670,7 +665,22 @@ export class BruinSmoothies extends Scene {
                     .times(Mat4.rotation(Math.PI / 2, 0, 1, 0));
             }
 
+            // if (ingredient instanceof Raspberry) {
+            //     ingredient.shape.draw(context, program_state, shape_mtx, ingredient.material);
+            //     shape_mtx = shape_mtx.times(Mat4.translation(-1,0,0));
+            //     ingredient.shape.draw(context, program_state, shape_mtx, ingredient.material);
+            //     shape_mtx = shape_mtx.times(Mat4.translation(2,0,0));
+            //     ingredient.shape.draw(context, program_state, shape_mtx, ingredient.material);
+            //     shape_mtx = shape_mtx.times(Mat4.translation(-.5,-2,0));
+            //     ingredient.shape.draw(context, program_state, shape_mtx, ingredient.material);
+            //     shape_mtx = shape_mtx.times(Mat4.translation(-1.5,0,0));
+            //     ingredient.shape.draw(context, program_state, shape_mtx, ingredient.material);
+            //     shape_mtx = shape_mtx.times(Mat4.translation(.5,-2,0));
+            //     ingredient.shape.draw(context, program_state, shape_mtx, ingredient.material);
+            //
+            // } else {
             ingredient.shape.draw(context, program_state, shape_mtx, ingredient.material);
+            // }
 
             if (ingredient.shape2 !== null) {
                 // below line proves Orange enters here

@@ -1,4 +1,5 @@
 import {tiny} from '../tiny-graphics.js';
+import {defs} from '../examples/common.js';
 const {
   Vector, Vector3, vec, vec3, vec4, color, hex_color, Shader, Matrix, Mat4, Light, Shape, Material, Scene
 } = tiny;
@@ -74,7 +75,6 @@ const HalfCircle = custom_shapes.HalfCircle =
             this.indices.push(0, num_segments + 1, 1);
         }
     }
-
 
 const HalfApple = custom_shapes.HalfApple = class HalfApple extends Shape {
     constructor() {
