@@ -5,7 +5,6 @@ Welcome to the fruit stand! Our customers are thirsty, and they want their smoot
 ## TDL
 - Visuals
   - Add more fruits
-    - Peaches could look similar to apples
     - Strawberries, kiwis, raspberries, blackberries
   - Fix models
     - Banana
@@ -24,7 +23,7 @@ Welcome to the fruit stand! Our customers are thirsty, and they want their smoot
       - Mem leaks?
     - Crash on generating '0' in line 556 col 68??
   - Fix collisions
-    - Kinda go thru the wall rn (banana, watermelon?)
+    - Kinda go thru the wall rn (banana, watermelon? spawns outside)
     - Sometimes randomly start orbiting each other
   - Improve recipes
     - More variation in amounts/ingredients, once we have more fruit

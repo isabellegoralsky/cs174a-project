@@ -28,7 +28,7 @@ const APPLE_MATERIAL_1 = new Material(new Textured_Phong(), {
 const APPLE_MATERIAL_2 = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0.1, color: hex_color("#1F9A0E")});
 const APPLE_MATERIAL_3 = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0, color: hex_color("#594A4B")});
 
-const PEACH_SHAPE_1 = new custom_shapes.AppleShape(-0.5);
+const PEACH_SHAPE_1 = new custom_shapes.AppleShape(-0.3);
 const PEACH_MATERIAL_1 = new Material(new Textured_Phong(), {
     color: hex_color("#000000"),
     ambient: 1, diffusivity: 0.1, specularity: 0,
@@ -245,22 +245,25 @@ export class BruinSmoothies extends Scene {
 
         this.ingredient_mapping = {
             "Watermelon": Watermelon,
-            "Apple": Apple,
             "Orange": Orange,
-            "Banana": Banana,
+            "Apple": Apple,
+            "Peach": Peach,
+            "Cherry": Cherry,
             "Blueberry": Blueberry,
             "Cranberry": Cranberry,
-            "Cherry": Cherry,
-            "Peach": Peach,
+            "Banana": Banana,
 
             "Bomb": Bomb,
             "Freeze": Freeze,
         };
         this.recipes = {
             "Citrus Splash":  ["Orange", "Orange", "Apple", "Banana"],
-            "Berry Blast":    ["Blueberry", "Blueberry", "Cherry", "Watermelon", "Banana"],
-            "Cherry Bomb":    ["Cherry", "Cherry", "Blueberry", "Orange"],
-            "Cran-apple":     ["Apple", "Apple", "Cranberry", "Cranberry"]
+            "Berry Blast":    ["Blueberry", "Blueberry", "Cherry", "Watermelon", "Cranberry"],
+            "Summer Refresh": ["Watermelon", "Cherry", "Peach"],
+            "Cherry Bomb":    ["Cherry", "Cherry", "Cherry", "Apple", "Orange"],
+            "Cran Apple":     ["Apple", "Apple", "Cranberry", "Cranberry"],
+            "Peachy Keen":    ["Peach", "Peach", "Peach", "Apple"],
+            "Banana Berry":   ["Banana", "Blueberry", "Blueberry"]
             // Strawnana
         };
         
@@ -299,7 +302,7 @@ export class BruinSmoothies extends Scene {
     }
 
     // avoids ingredients spawning at the same location
-    generate_valid_position(existing_ingredients, margin=2) {
+    generate_valid_position(existing_ingredients, margin=3) {
         let is_valid_position = false;
         let x, y, z;
 
