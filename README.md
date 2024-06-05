@@ -4,6 +4,9 @@ Welcome to the fruit stand! Our customers are thirsty, and they want their smoot
 
 ## TDL
 - Visuals
+  - Fix board thing
+    - Add texture idk why its not working
+    - Make the shapes look how theyr're supposed to
   - Add more fruits
     - Strawberries, kiwis, raspberries, blackberries
   - Fix models
@@ -13,15 +16,16 @@ Welcome to the fruit stand! Our customers are thirsty, and they want their smoot
   - Fix text display
     - Make strikes be red X's
     - Fix rotation
-  - Put correct fruit outside on the ground or something? Maybe on chopping board
   - Shadows?
   - Make ingredients spin a little?
 - Gameplay
   - Fix bugs
     - First clicks dont work
+      - Give a few secs to load somehow?
     - Laggy!
+      - [Violation] 'requestAnimationFrame' handler took 67ms
       - Mem leaks?
-    - Crash on generating '0' in line 556 col 68??
+    - Crash on generating '0' in line 611 col 68??
   - Fix collisions
     - Kinda go thru the wall rn (banana, watermelon? spawns outside)
     - Sometimes randomly start orbiting each other

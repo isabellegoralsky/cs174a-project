@@ -103,6 +103,14 @@ class Ingredient {
         this.shape3 = shp3;
         this.material3 = mat3;
     }
+
+    set_posn(x_pos, y_pos, z_pos) {
+        this.center = vec3(x_pos, y_pos, z_pos);
+    }
+
+    set_speed(x_spd, y_spd, z_spd) {
+        this.direction = vec3(x_spd, y_spd, z_spd);
+    }
 }
 
 class Watermelon extends Ingredient {
@@ -243,6 +251,13 @@ export class BruinSmoothies extends Scene {
             texture: new Texture("assets/textures/grass.jpg", "NEAREST")
         });
 
+        this.board_shape = new defs.Square();
+        this.board_material = new Material(new Textured_Phong(), {
+            color: hex_color("#000000"),
+            ambient: 1, diffusivity: 0.1, specularity: 0.1,
+            texture: new Texture("assets/textures/board.jpg", "NEAREST")
+        });
+
         this.ingredient_mapping = {
             "Watermelon": Watermelon,
             "Orange": Orange,
@@ -359,8 +374,9 @@ export class BruinSmoothies extends Scene {
         }
 
         this.recipe_name = random_recipe_name; // name of smoothie
-        this.current_ingredients = [...recipe]; // list of string names of ingredients
+        this.recipe_ingredients = [...recipe]; // list of string names of ingredients
         this.ingredients = ingredient_list; // list of ingredient objects
+        this.correct_ingredients = [] // correctly removed ingredient objects
         this.strikes = 0;
         this.speed_mult *= 1.1;
     }
@@ -382,6 +398,20 @@ export class BruinSmoothies extends Scene {
             .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
             .times(Mat4.scale(this.width*1.5, this.depth*1.5, 1));
         this.floor_shape.draw(context, program_state, floor_transform, this.floor_material);
+
+        const board_transform = Mat4.identity()
+            .times(Mat4.translation(30, -this.height / 2 - 0.3, 0))
+            .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
+            .times(Mat4.scale(10, 20, 1));
+        this.board_shape.draw(context, program_state, board_transform, this.board_material);
+
+        const shape_mtx = Mat4.identity();
+        for (let ingredient of this.correct_ingredients) {
+            let ingr_mtx = shape_mtx
+                .times(Mat4.translation(ingredient.center[0], ingredient.center[1], ingredient.center[2]))
+                .times(Mat4.scale(ingredient.radius, ingredient.radius, ingredient.radius));
+            ingredient.shape.draw(context, program_state, ingr_mtx, ingredient.material);
+        }
     }
 
     draw_text(context, program_state) {
@@ -392,7 +422,7 @@ export class BruinSmoothies extends Scene {
         this.recipe_text.draw(context, program_state, recipe_transform, this.text_material);
 
         let ingredient_transform = recipe_transform
-        for (let ingredient of this.current_ingredients) {
+        for (let ingredient of this.recipe_ingredients) {
             this.recipe_text.set_string(ingredient, context.context);
             ingredient_transform = ingredient_transform
                 .times(Mat4.rotation(-20, 1, 0, 0))
@@ -518,6 +548,13 @@ export class BruinSmoothies extends Scene {
         }, 1500); // 1.5s
     }
 
+    handle_correct_removal(correctly_removed_ingr) {
+        this.correct_sound.play();
+        correctly_removed_ingr.set_speed(0, 0, 0);
+        correctly_removed_ingr.set_posn(30, 0, -15 + 5*this.correct_ingredients.length);
+        this.correct_ingredients.push(correctly_removed_ingr);
+    }
+
     pickIngredient(mouse_x, mouse_y) {
         const ray = this.calculate_mouse_ray(mouse_x, mouse_y);
         for (let i = 0; i < this.ingredients.length; i++) {
@@ -529,11 +566,12 @@ export class BruinSmoothies extends Scene {
                     this.explosion_sound.play();
                     this.setup_game();
                 } else {
-                    const index = this.current_ingredients.indexOf(ingredient_name);
+                    const index = this.recipe_ingredients.indexOf(ingredient_name);
                     if (index !== -1) {
                         this.score += 100;
-                        this.current_ingredients.splice(index, 1);
-                        this.correct_sound.play();
+                        this.recipe_ingredients.splice(index, 1); // remove string from recipe
+                        let correctly_removed_ingr = this.ingredients[i];
+                        this.handle_correct_removal(correctly_removed_ingr);
                     } else {
                         this.strikes += 1;
                         if (this.strikes === 3) {
@@ -544,7 +582,7 @@ export class BruinSmoothies extends Scene {
                         }
                     }
                 }
-                this.ingredients.splice(i, 1);
+                this.ingredients.splice(i, 1); // remove actual object, regardless of what it was
                 break;
             }
         }
@@ -668,7 +706,7 @@ export class BruinSmoothies extends Scene {
             ingredient.center[2] = new_z;
         }
 
-        if (this.current_ingredients.length === 0) {
+        if (this.recipe_ingredients.length === 0) {
             this.win_sound.play();
             this.restart_level();
         }

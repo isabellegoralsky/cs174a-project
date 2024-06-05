@@ -7,6 +7,7 @@
     <list default="true" id="53ed965e-cb03-495c-9d4e-9f240416db93" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/textures/chopping_board.jpg" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/bruinsmoothies.js" beforeDir="false" afterPath="$PROJECT_DIR$/bruinsmoothies.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -62,7 +63,7 @@
       <workItem from="1717449036940" duration="109000" />
       <workItem from="1717451563559" duration="287000" />
       <workItem from="1717452056878" duration="6270000" />
-      <workItem from="1717564473198" duration="687000" />
+      <workItem from="1717564473198" duration="3181000" />
     </task>
     <servers />
   </component>
