@@ -5,12 +5,12 @@ Welcome to the fruit stand! Our customers are thirsty, and they want their smoot
 ## TDL
 - Visuals
   - Add more fruits
-    - Peaches could look similar to apples
-    - Strawberries, kiwis, raspberries, blackberries
+    - Strawberries, raspberries, blackberries
   - Fix models
     - Banana
       - Looks weird, also too small?
       - Hard to click
+      - goes thru walls
   - Fix text display
     - Make strikes be red X's
     - Fix rotation

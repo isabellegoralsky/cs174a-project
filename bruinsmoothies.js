@@ -54,6 +54,13 @@ const ORANGE_MATERIAL_1 = new Material(new Textured_Phong(), {
 });
 const ORANGE_MATERIAL_2 = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0.1, color: hex_color("#1F9A0E")});
 
+const KIWI_SHAPE_1 = new defs.Subdivision_Sphere(4);
+const KIWI_MATERIAL_1 = new Material(new Textured_Phong(), {
+    color: hex_color("#000000"),
+    ambient: 1, diffusivity: 0.1, specularity: 0,
+    texture: new Texture("assets/textures/kiwi.jpg", "NEAREST")
+});
+
 const BANANA_SHAPE_1 = new custom_shapes.BananaShape();
 const BANANA_MATERIAL_1 = new Material(new Textured_Phong(), {
     color: hex_color("#000000"),
@@ -66,6 +73,13 @@ const BLUEBERRY_MATERIAL_1 = new Material(new Textured_Phong(), {
     color: hex_color("#000000"),
     ambient: 1, diffusivity: 0.1, specularity: 0.2,
     texture: new Texture("assets/textures/blueb.png", "NEAREST")
+});
+
+const RASPBERRY_SHAPE_1 = new defs.Subdivision_Sphere(4);
+const RASPBERRY_MATERIAL_1 = new Material(new Textured_Phong(), {
+    color: hex_color("#000000"),
+    ambient: 1, diffusivity: 0.1, specularity: 0.1,
+    texture: new Texture("assets/textures/raspberry.png", "NEAREST")
 });
 
 const CRANBERRY_SHAPE_1 = new defs.Subdivision_Sphere(4);
@@ -175,6 +189,15 @@ class Orange extends Ingredient {
     }
 }
 
+class Kiwi extends Ingredient{
+    constructor(x_pos, y_pos, z_pos, x_spd, y_spd, z_spd) {
+        const shp = KIWI_SHAPE_1;
+        const mat = KIWI_MATERIAL_1;
+        
+        super(x_pos, y_pos, z_pos, x_spd, y_spd, z_spd, 1.5, .8, shp, mat);
+    }
+}
+
 class Banana extends Ingredient {
     constructor(x_pos, y_pos, z_pos, x_spd, y_spd, z_spd) {
         const shp = BANANA_SHAPE_1;
@@ -190,6 +213,15 @@ class Blueberry extends Ingredient {
         const mat = BLUEBERRY_MATERIAL_1;
 
         super(x_pos, y_pos, z_pos, x_spd, y_spd, z_spd, .5, .5, shp, mat);
+    }
+}
+
+class Raspberry extends Ingredient {
+    constructor(x_pos, y_pos, z_pos, x_spd, y_spd, z_spd) {
+        const shp = RASPBERRY_SHAPE_1;
+        const mat = RASPBERRY_MATERIAL_1;
+
+        super(x_pos, y_pos, z_pos, x_spd, y_spd, z_spd, .75, .5, shp, mat);
     }
 }
 
@@ -252,7 +284,8 @@ export class BruinSmoothies extends Scene {
             "Cranberry": Cranberry,
             "Cherry": Cherry,
             "Peach": Peach,
-
+            "Kiwi": Kiwi,
+            //"Raspberry": Raspberry,
             "Bomb": Bomb,
             "Freeze": Freeze,
         };
