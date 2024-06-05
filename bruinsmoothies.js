@@ -519,7 +519,10 @@ export class BruinSmoothies extends Scene {
     }
 
     raySphereIntersection(ray, ingredient) {
-        const radius = ingredient.radius;
+        let radius = ingredient.radius;
+        if (ingredient instanceof Banana) {
+            radius = radius * 1.5;
+        }
         const center =
             this.program_state.camera_inverse.times(
               vec4(ingredient.center[0], ingredient.center[1], ingredient.center[2], 1)
