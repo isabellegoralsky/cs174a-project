@@ -178,10 +178,10 @@ const AppleShape = custom_shapes.AppleShape = class AppleShape extends Shape {
 const BananaShape = custom_shapes.BananaShape = class BananaShape extends Shape {
     constructor() {
         super("position", "normal", "texture_coord");
-        const segments = 50; // More segments for smoother curves
-        const radius = 0.4; // Thickness of the banana
-        const length = 4.0; // Length of the banana
-        const curve_radius = 2.0; // Radius of the curve of the banana
+        const segments = 100; // More segments for smoother curves
+        const radius = 0.3; // Thickness of the banana
+        const length = 8.0; // Length of the banana
+        const curve_radius = 0.7; // Radius of the curve of the banana
 
         // Create the banana shape using cylindrical segments around the curve
         for (let i = 0; i <= segments; i++) {
