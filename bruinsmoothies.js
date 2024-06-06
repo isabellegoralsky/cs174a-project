@@ -322,14 +322,15 @@ export class BruinSmoothies extends Scene {
         };
         this.recipes = {
             "Citrus Splash":  ["Orange", "Orange", "Apple", "Banana"],
-            "Berry Blast":    ["Blueberry", "Blueberry", "Cherry", "Watermelon", "Cranberry"], // make all berries
+            "Berry Blast":    ["Blueberry", "Blueberry", "Strawberry", "Raspberry", "Watermelon"],
             "Summer Refresh": ["Watermelon", "Cherry", "Peach"],
             "Cherry Bomb":    ["Cherry", "Cherry", "Cherry", "Apple", "Orange"],
             "Cran Apple":     ["Apple", "Apple", "Cranberry", "Cranberry"],
             "Peachy Keen":    ["Peach", "Peach", "Peach", "Apple"],
-            "Banana Berry":   ["Banana", "Blueberry", "Blueberry"]
-            // Strawnana
-            // Kiwi strawberry
+            "Kiwi Citrus":    ["Kiwi", "Banana", "Orange", "Blueberry"],
+            "Strawnana":      ["Strawberry", "Strawberry", "Banana", "Banana", "Watermelon"],
+            "Kiwi Strawberry":["Kiwi", "Kiwi", "Strawberry", "Strawberry"],
+            "Super Berries":  ["Cranberry", "Blueberry", "Raspberry", "Banana", "Orange"]
         };
         
         this.setup_game();
@@ -466,7 +467,7 @@ export class BruinSmoothies extends Scene {
     draw_text(context, program_state) {
         this.recipe_text.set_string(`Recipe: ${this.recipe_name}`, context.context);
         let recipe_transform = Mat4.identity()
-            .times(Mat4.translation(-this.width*1.5 + 3.5, -this.height / 2 + 0.7, -this.depth*1.5 + 3.5))
+            .times(Mat4.translation(-this.width*1.5 + 3.5, -this.height / 2 + 0.7, -this.depth*1.5 + 4.5))
             .times(Mat4.rotation(-Math.PI / 2 + 20, 1, 0, 0));
         this.recipe_text.draw(context, program_state, recipe_transform, this.text_material);
 
@@ -482,7 +483,7 @@ export class BruinSmoothies extends Scene {
 
         this.score_text.set_string(`Score: ${this.score}`, context.context);
         let score_transform = Mat4.identity()
-            .times(Mat4.translation(this.width*1.5 - 17, -this.height / 2 + 0.7, -this.depth*1.5 + 3.5))
+            .times(Mat4.translation(this.width*1.5 - 18, -this.height / 2 + 0.7, -this.depth*1.5 + 5))
             .times(Mat4.rotation(-Math.PI / 2 + 20, 1, 0, 0))
             .times(Mat4.scale(1.2, 1.2, 1.2));
         this.score_text.draw(context, program_state, score_transform, this.text_material);
@@ -500,10 +501,10 @@ export class BruinSmoothies extends Scene {
         const half_height = this.height / 2;
         const half_depth = this.depth / 2;
         if (ingredient instanceof Banana) {
-            if (ingredient.center[0] - 1 <= -half_width || ingredient.center[0] + 5 >= half_width) {
+            if (ingredient.center[0] - 1 <= -half_width || ingredient.center[0] + 2 >= half_width) {
                 ingredient.direction[0] *= -1;
             }
-            if (ingredient.center[1] - 3 <= -half_height || ingredient.center[1] + ingredient.radius >= half_height) {
+            if (ingredient.center[1] - 4 <= -half_height || ingredient.center[1] + ingredient.radius >= half_height) {
                 ingredient.direction[1] *= -1;
             }
             if (ingredient.center[2] - 5 <= -half_depth || ingredient.center[2] + 1 >= half_depth) {
@@ -658,9 +659,14 @@ export class BruinSmoothies extends Scene {
         this.draw_text(context, program_state);
 
         for (let i = 0; i < this.ingredients.length; i++) {
-            this.check_wall_collision(this.ingredients[i]);
+            let ingredient = this.ingredients[i];
+            if (!ingredient.direction) {
+              console.log('whew');
+              continue;
+            }
+            this.check_wall_collision(ingredient);
             for (let j = i + 1; j < this.ingredients.length; j++) {
-                this.check_ingredient_collision(this.ingredients[i], this.ingredients[j]);
+                this.check_ingredient_collision(ingredient, this.ingredients[j]);
             }
         }
 
@@ -668,6 +674,12 @@ export class BruinSmoothies extends Scene {
 
         for (let ingredient of this.ingredients) {
             let shape_mtx = model_transform;
+
+            if (!ingredient.direction) {
+              console.log('whew');
+              continue;
+            }
+
             let new_x = ingredient.center[0] + ingredient.direction[0] * this.speed_mult;
             let new_y = ingredient.center[1] + ingredient.direction[1] * this.speed_mult;
             let new_z = ingredient.center[2] + ingredient.direction[2] * this.speed_mult;
