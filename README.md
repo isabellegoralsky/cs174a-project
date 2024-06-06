@@ -25,7 +25,6 @@ Welcome to the fruit stand! Our customers are thirsty, and they want their smoot
     - Laggy!
       - Crash on reading properties of undefined '0' let new_x = ingredient.center[0] + ingredient.direction[0] * this.speed_mult;
         - From level prog
-      - Partition space?
       - [Violation] 'requestAnimationFrame' handler took 67ms
       - Mem leaks?
   - Fix collisions

@@ -339,9 +339,6 @@ export class BruinSmoothies extends Scene {
         this.explosion_sound = new Audio('sounds/explosion.mp3');
         this.explosion_sound.volume = 0.3;
         this.freeze_sound = new Audio('sounds/freeze.mp3');
-
-        this.collision_check_interval = 0.1;
-        this.last_collision_check_time = 0;
     }
 
     random_number(min=0, max=1) {
@@ -647,15 +644,11 @@ export class BruinSmoothies extends Scene {
         this.draw_floor(context, program_state);
         this.draw_text(context, program_state);
 
-        let t = program_state.animation_time / 1000;
-        if (t - this.last_collision_check_time >= this.collision_check_interval) {
-            for (let i = 0; i < this.ingredients.length; i++) {
-                this.check_wall_collision(this.ingredients[i]);
-                for (let j = i + 1; j < this.ingredients.length; j++) {
-                    this.check_ingredient_collision(this.ingredients[i], this.ingredients[j]);
-                }
+        for (let i = 0; i < this.ingredients.length; i++) {
+            this.check_wall_collision(this.ingredients[i]);
+            for (let j = i + 1; j < this.ingredients.length; j++) {
+                this.check_ingredient_collision(this.ingredients[i], this.ingredients[j]);
             }
-            this.last_collision_check_time = t;
         }
 
         const model_transform = Mat4.identity();
