@@ -8,14 +8,14 @@ Welcome to the fruit stand! Our customers are thirsty, and they want their smoot
     - Make the fruits look like they do inside
   - Add more fruits
     - Finish raspberries
-    - Strawberries, blackberries
+    - Strawberries
   - Fix models
     - Banana
       - Looks weird, also too small?
       - Hard to click
-      - goes thru walls
+      - Goes thru walls
   - Fix text display
-    - Make strikes be red X's
+    - Make strikes be red X's?
     - Fix rotation
   - Shadows?
   - Make ingredients spin a little?
@@ -28,11 +28,11 @@ Welcome to the fruit stand! Our customers are thirsty, and they want their smoot
       - [Violation] 'requestAnimationFrame' handler took 67ms
       - Mem leaks?
   - Fix collisions
-    - Kinda go thru the wall rn (banana, spawns outside)
     - Sometimes randomly start orbiting each other
+    - Spawn outside?
   - Improve recipes
     - More variation in amounts/ingredients, once we have more fruit
-      - Use kiwis, rasps when done
+      - Use kiwis + straw/raspberries
     - Multiples as x2?
     - Use control panel?
     - Probability of ingredient inclusion?

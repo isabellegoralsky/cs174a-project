@@ -288,26 +288,28 @@ export class BruinSmoothies extends Scene {
             "Watermelon": Watermelon,
             "Orange": Orange,
             "Apple": Apple,
-            "Blueberry": Blueberry,
-            "Cranberry": Cranberry,
-            "Banana": Banana,
-
-            "Cherry": Cherry,
             "Peach": Peach,
             "Kiwi": Kiwi,
+            "Blueberry": Blueberry,
             //"Raspberry": Raspberry,
+            // Strawberry soon
+            "Cranberry": Cranberry,
+            "Cherry": Cherry,
+            "Banana": Banana,
+
             "Bomb": Bomb,
             "Freeze": Freeze,
         };
         this.recipes = {
             "Citrus Splash":  ["Orange", "Orange", "Apple", "Banana"],
-            "Berry Blast":    ["Blueberry", "Blueberry", "Cherry", "Watermelon", "Cranberry"],
+            "Berry Blast":    ["Blueberry", "Blueberry", "Cherry", "Watermelon", "Cranberry"], // make all berries
             "Summer Refresh": ["Watermelon", "Cherry", "Peach"],
             "Cherry Bomb":    ["Cherry", "Cherry", "Cherry", "Apple", "Orange"],
             "Cran Apple":     ["Apple", "Apple", "Cranberry", "Cranberry"],
             "Peachy Keen":    ["Peach", "Peach", "Peach", "Apple"],
             "Banana Berry":   ["Banana", "Blueberry", "Blueberry"]
             // Strawnana
+            // Kiwi strawberry
         };
         
         this.setup_game();
