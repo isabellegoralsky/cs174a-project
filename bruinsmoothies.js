@@ -218,6 +218,14 @@ class Blueberry extends Ingredient {
     }
 }
 
+class Raspberry extends Ingredient {
+    constructor(x_pos, y_pos, z_pos, x_spd, y_spd, z_spd) {
+        const shp = new defs.Subdivision_Sphere(4);
+        const mat = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0.1, color: hex_color("#a80000")});;
+        super(x_pos, y_pos, z_pos, x_spd, y_spd, z_spd, .5, .5, shp, mat);
+    }
+}
+
 class Strawberry extends Ingredient {
     constructor(x_pos, y_pos, z_pos, x_spd, y_spd, z_spd) {
         const shp = STRAWBERRY_SHAPE_1;
@@ -294,7 +302,7 @@ export class BruinSmoothies extends Scene {
             "Peach": Peach,
             "Kiwi": Kiwi,
             "Blueberry": Blueberry,
-            //"Raspberry": Raspberry,
+            "Raspberry": Raspberry,
             "Strawberry": Strawberry,
             "Cranberry": Cranberry,
             "Cherry": Cherry,
