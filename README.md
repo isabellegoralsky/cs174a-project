@@ -20,7 +20,6 @@ Welcome to the fruit stand! Our customers are thirsty, and they want their smoot
     - More variation in amounts/ingredients, once we have more fruit
       - Use kiwis + straw/raspberries
     - Use control panel?
-    - Probability of ingredient inclusion?
 - General
   - Clean/organize code
     - Top part with const defns looks ugly
