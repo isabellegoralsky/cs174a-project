@@ -460,6 +460,27 @@ export class BruinSmoothies extends Scene {
             let ingr_mtx = Mat4.identity()
                 .times(Mat4.translation(ingredient.center[0], ingredient.center[1], ingredient.center[2]))
                 .times(Mat4.scale(ingredient.radius, ingredient.radius, ingredient.radius));
+
+            // getting the fruits to look right
+            if (ingredient instanceof Banana){
+                ingr_mtx = ingr_mtx.times(Mat4.scale(2.2, 1, 1))
+                            .times(Mat4.rotation(-Math.PI/3, 1,0,0));
+            } else if (ingredient instanceof Apple || ingredient instanceof Peach) {
+                ingr_mtx = ingr_mtx
+                     .times(Mat4.scale(1, 0.8984375, .8))
+                     .times(Mat4.rotation(Math.PI / 2, 0, 1, 0))
+                     .times(Mat4.rotation(-Math.PI/3, 0,0,1));
+            }else if (ingredient instanceof Cherry) {
+                ingr_mtx = ingr_mtx
+                    .times(Mat4.scale(1, 0.8984375, .65))
+                    .times(Mat4.rotation(Math.PI / 2, 0, 1, 0))
+                    .times(Mat4.rotation(-Math.PI/3, 0,0,1));
+            }else if (ingredient instanceof Orange || ingredient instanceof Watermelon || ingredient instanceof Kiwi || ingredient instanceof Strawberry) {
+                ingr_mtx = ingr_mtx
+                    .times(Mat4.rotation(-Math.PI/3, 1,0,0));
+            }
+
+
             ingredient.shape.draw(context, program_state, ingr_mtx, ingredient.material);
         }
     }

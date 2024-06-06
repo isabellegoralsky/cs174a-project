@@ -5,12 +5,10 @@ Welcome to the fruit stand! Our customers are thirsty, and they want their smoot
 ## TDL
 - Fix board thing (isabelle)
   - Make the fruits look like they do inside
-- Add more fruits (isabelle)
+    - DONE: watermelon, kiwi, cranberry, blueberry, banana, bases (apple, peach, cherry, orange, strawberry)
+    - needs: strawberry leaf, apple stem/leaf, orange leaf, peach leaf, cherry stems
+- Add fruits (isabelle)
   - Finish raspberries
-- Fix models (joel)
-  - Banana
-    - Looks weird, also too small?
-    - Hardish to click
 - Clean/organize code
   - Top part with const defns looks ugly
 - Random crash?
