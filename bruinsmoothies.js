@@ -81,6 +81,8 @@ const STRAWBERRY_MATERIAL_1 = new Material(new Textured_Phong(), {
     ambient: 1, diffusivity: 0.1, specularity: 0.1,
     texture: new Texture("assets/textures/strawberry.png", "NEAREST")
 });
+const STRAWBERRY_MATERIAL_2 = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0.1, color: hex_color("#0e6102")});
+
 
 const CRANBERRY_SHAPE_1 = new defs.Subdivision_Sphere(4);
 const CRANBERRY_MATERIAL_1 = new Material(new Textured_Phong(), {
@@ -231,10 +233,10 @@ class Strawberry extends Ingredient {
         const shp = STRAWBERRY_SHAPE_1;
         const mat = STRAWBERRY_MATERIAL_1;
 
-        const shp2 = new defs.Subdivision_Sphere(4);
-        const mat2 = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0.1, color: hex_color("#0d5a03")});
-
-        super(x_pos, y_pos, z_pos, x_spd, y_spd, z_spd, 1, .8, shp, mat, shp2, mat2);
+        const shp2 = ORANGE_SHAPE_2;
+        const mat2 = STRAWBERRY_MATERIAL_2;
+        
+        super(x_pos, y_pos, z_pos, x_spd, y_spd, z_spd, 1, .7, shp, mat, shp2, mat2);
     }
 }
 
@@ -720,9 +722,9 @@ export class BruinSmoothies extends Scene {
                         .times(Mat4.rotation(-Math.PI/16, 0,0,1))
                         .times(Mat4.scale(.05, 1.5, .8));
                 }else if (ingredient instanceof Strawberry){
-                    leaf_transform = leaf_transform
-                        .times(Mat4.scale(.5,.2,.5))
-                        .times(Mat4.translation(0, 10, 0));
+                    leaf_offset = Mat4.translation(0, 1.5, 0).times(Mat4.rotation(Math.PI / 3, 0, 0, 1)).times(Mat4.rotation(Math.PI / 3, 0, 1, 0));
+                    //leaf_transform = leaf_transform.times(leaf_offset).times(Mat4.scale(.7, .5, 1.8
+                    leaf_transform = leaf_transform.times(leaf_offset).times(Mat4.scale(.8, .5, .8));
                 }else {
                     leaf_transform = leaf_transform.times(Mat4.scale(.9, .9, 1)).times(Mat4.translation(0, 0, .0001));
                 }
@@ -738,6 +740,9 @@ export class BruinSmoothies extends Scene {
                         .times(Mat4.scale(.05, 1.5, .8))
                         .times(Mat4.translation(8,0,0)) ;
                     ingredient.shape2.draw(context, program_state, leaf_transform, ingredient.material2);
+                }else if (ingredient instanceof Strawberry){
+                    leaf_transform = leaf_transform.times(Mat4.translation(0,-.8,0));
+                    ingredient.shape2.draw(context, program_state, leaf_transform, ingredient.material2); 
                 }
 
             }
