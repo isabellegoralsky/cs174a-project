@@ -534,13 +534,6 @@ export class BruinSmoothies extends Scene {
         }
     }
 
-    make_control_panel() {
-        this.key_triggered_button("Put stuff here", ["Control", "0"], () => console.log('test'));
-        this.new_line();
-        this.key_triggered_button("Score!?", ["Control", "0"], () => console.log('test'));
-        this.new_line();
-    }
-
     calculate_mouse_ray(mouse_x, mouse_y) {
         // source: https://antongerdelan.net/opengl/raycasting.html
         const ndc_x = 2 * mouse_x / this.context.width - 1;
