@@ -258,13 +258,13 @@ export class BruinSmoothies extends Scene {
     constructor() {
         super();
 
-        this.initial_camera_location = Mat4.look_at(vec3(0, 60, 30), vec3(0, 0, 0), vec3(0, 1, 0));
+        this.initial_camera_location = Mat4.look_at(vec3(0, 65, 45), vec3(0, -30, -10), vec3(0, 1, 0));
         this.width = 30;
         this.height = 15;
         this.depth = 30;
 
-        this.border_shape = new custom_shapes.BoxShape();
-        this.border_material = new Material(new Textured_Phong(), {
+        this.basket_shape = new custom_shapes.BoxShape();
+        this.basket_material = new Material(new Textured_Phong(), {
             color: hex_color("#373737"),
             ambient: .6, diffusivity: 0.1, specularity: 0.1,
             texture: new Texture("assets/textures/basket.jpg", "NEAREST")
@@ -415,9 +415,9 @@ export class BruinSmoothies extends Scene {
         this.restart_level();
     }
 
-    draw_border(context, program_state) {
+    draw_basket(context, program_state) {
         const model_transform = Mat4.identity();
-        this.border_shape.draw(context, program_state, model_transform, this.border_material);
+        this.basket_shape.draw(context, program_state, model_transform, this.basket_material);
     }
 
     draw_floor(context, program_state) {
@@ -428,18 +428,15 @@ export class BruinSmoothies extends Scene {
         this.floor_shape.draw(context, program_state, floor_transform, this.floor_material);
 
         const board_transform = Mat4.identity()
-            .times(Mat4.translation(0, -this.height / 2 - 0.1, 0))
+            .times(Mat4.translation(0, -this.height / 2 - 0.1, 25))
             .times(Mat4.rotation(Math.PI / 2, 1, 0, 0))
-            .times(Mat4.translation(0,20,0))
-            .times(Mat4.scale(15, 3, 1));
+            .times(Mat4.scale(12, 8, 1));
         this.board_shape.draw(context, program_state, board_transform, this.board_material);
 
-        const shape_mtx = Mat4.identity();
         for (let ingredient of this.correct_ingredients) {
-            let ingr_mtx = shape_mtx
+            let ingr_mtx = Mat4.identity()
                 .times(Mat4.translation(ingredient.center[0], ingredient.center[1], ingredient.center[2]))
                 .times(Mat4.scale(ingredient.radius, ingredient.radius, ingredient.radius));
-
             ingredient.shape.draw(context, program_state, ingr_mtx, ingredient.material);
         }
     }
@@ -583,7 +580,7 @@ export class BruinSmoothies extends Scene {
     handle_correct_removal(correctly_removed_ingr) {
         this.correct_sound.play();
         correctly_removed_ingr.set_speed(0, 0, 0);
-        correctly_removed_ingr.set_posn(30, 0, -15 + 5*this.correct_ingredients.length);
+        correctly_removed_ingr.set_posn(-7.5 + 5*this.correct_ingredients.length, 0, 27.5);
         this.correct_ingredients.push(correctly_removed_ingr);
     }
 
@@ -632,7 +629,7 @@ export class BruinSmoothies extends Scene {
         program_state.projection_transform = Mat4.perspective(Math.PI / 4, context.width / context.height, .1, 1000);
         program_state.lights = [new Light(vec4(0, 0, 1000, 1), color(1, 1, 1, 1), 10000000)];
 
-        this.draw_border(context, program_state);
+        this.draw_basket(context, program_state);
         this.draw_floor(context, program_state);
         this.draw_text(context, program_state);
 

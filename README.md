@@ -5,9 +5,10 @@ Welcome to the fruit stand! Our customers are thirsty, and they want their smoot
 ## TDL
 - Visuals
   - Fix board thing
-    - Make the shapes look how they're supposed to
+    - Make the fruits look like they do inside
   - Add more fruits
-    - Strawberries, raspberries, blackberries
+    - Finish raspberries
+    - Strawberries, blackberries
   - Fix models
     - Banana
       - Looks weird, also too small?
@@ -23,14 +24,15 @@ Welcome to the fruit stand! Our customers are thirsty, and they want their smoot
     - First clicks dont work
       - Give a few secs to load somehow?
     - Laggy!
+      - Crash on reading properties of undefined '0' let new_x = ingredient.center[0] + ingredient.direction[0] * this.speed_mult;
       - [Violation] 'requestAnimationFrame' handler took 67ms
       - Mem leaks?
-    - Crash on generating '0' in line 611 col 68??
   - Fix collisions
     - Kinda go thru the wall rn (banana, spawns outside)
     - Sometimes randomly start orbiting each other
   - Improve recipes
     - More variation in amounts/ingredients, once we have more fruit
+      - Use kiwis, rasps when done
     - Multiples as x2?
     - Use control panel?
     - Probability of ingredient inclusion?
