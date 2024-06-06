@@ -78,11 +78,17 @@ const BLUEBERRY_MATERIAL_1 = new Material(new Textured_Phong(), {
 const STRAWBERRY_SHAPE_1 = new custom_shapes.StrawberryShape();
 const STRAWBERRY_MATERIAL_1 = new Material(new Textured_Phong(), {
     color: hex_color("#000000"),
-    ambient: 1, diffusivity: 0.1, specularity: 0.1,
+    ambient: 1, diffusivity: 0.1, specularity: 0.3,
     texture: new Texture("assets/textures/strawberry.png", "NEAREST")
 });
 const STRAWBERRY_MATERIAL_2 = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0.1, color: hex_color("#0e6102")});
 
+const RASPBERRY_SHAPE_1 = new defs.Subdivision_Sphere(4);
+const RASPBERRY_MATERIAL_1 = new Material(new Textured_Phong(), {
+    color: hex_color("#000000"),
+    ambient: 1, diffusivity: 0.1, specularity: 0.1,
+    texture: new Texture("assets/textures/raspberry.png", "NEAREST")
+});
 
 const CRANBERRY_SHAPE_1 = new defs.Subdivision_Sphere(4);
 const CRANBERRY_MATERIAL_1 = new Material(new Textured_Phong(), {
@@ -222,9 +228,10 @@ class Blueberry extends Ingredient {
 
 class Raspberry extends Ingredient {
     constructor(x_pos, y_pos, z_pos, x_spd, y_spd, z_spd) {
-        const shp = new defs.Subdivision_Sphere(4);
-        const mat = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0.1, color: hex_color("#a80000")});;
-        super(x_pos, y_pos, z_pos, x_spd, y_spd, z_spd, .5, .5, shp, mat);
+        const shp = RASPBERRY_SHAPE_1;
+        const mat = RASPBERRY_MATERIAL_1;
+
+        super(x_pos, y_pos, z_pos, x_spd, y_spd, z_spd, .7, .65, shp, mat);
     }
 }
 
@@ -236,7 +243,7 @@ class Strawberry extends Ingredient {
         const shp2 = ORANGE_SHAPE_2;
         const mat2 = STRAWBERRY_MATERIAL_2;
         
-        super(x_pos, y_pos, z_pos, x_spd, y_spd, z_spd, 1, .7, shp, mat, shp2, mat2);
+        super(x_pos, y_pos, z_pos, x_spd, y_spd, z_spd, 1, .8, shp, mat, shp2, mat2);
     }
 }
 
