@@ -479,17 +479,26 @@ export class BruinSmoothies extends Scene {
         const half_width = this.width / 2;
         const half_height = this.height / 2;
         const half_depth = this.depth / 2;
-
-        if (ingredient.center[2] - ingredient.radius <= -half_depth || ingredient.center[2] + ingredient.radius >= half_depth) {
-            ingredient.direction[2] *= -1;
-        }
-
-        if (ingredient.center[0] - ingredient.radius <= -half_width || ingredient.center[0] + ingredient.radius >= half_width) {
-            ingredient.direction[0] *= -1;
-        }
-
-        if (ingredient.center[1] - ingredient.radius <= -half_height || ingredient.center[1] + ingredient.radius >= half_height) {
-            ingredient.direction[1] *= -1;
+        if (ingredient instanceof Banana) {
+            if (ingredient.center[0] - 1 <= -half_width || ingredient.center[0] + 5 >= half_width) {
+                ingredient.direction[0] *= -1;
+            }
+            if (ingredient.center[1] - 3 <= -half_height || ingredient.center[1] + ingredient.radius >= half_height) {
+                ingredient.direction[1] *= -1;
+            }
+            if (ingredient.center[2] - 5 <= -half_depth || ingredient.center[2] + 1 >= half_depth) {
+                ingredient.direction[2] *= -1;
+            }
+        } else {
+            if (ingredient.center[0] - ingredient.radius <= -half_width || ingredient.center[0] + ingredient.radius >= half_width) {
+                ingredient.direction[0] *= -1;
+            }
+            if (ingredient.center[1] - ingredient.radius <= -half_height || ingredient.center[1] + ingredient.radius >= half_height) {
+                ingredient.direction[1] *= -1;
+            }
+            if (ingredient.center[2] - ingredient.radius <= -half_depth || ingredient.center[2] + ingredient.radius >= half_depth) {
+                ingredient.direction[2] *= -1;
+            }
         }
     }
 

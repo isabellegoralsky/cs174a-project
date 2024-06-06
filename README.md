@@ -13,7 +13,6 @@ Welcome to the fruit stand! Our customers are thirsty, and they want their smoot
     - Banana
       - Looks weird, also too small?
       - Hard to click
-      - Goes thru walls
   - Fix text display
     - Make strikes be red X's?
     - Fix rotation
@@ -25,6 +24,7 @@ Welcome to the fruit stand! Our customers are thirsty, and they want their smoot
       - Give a few secs to load somehow?
     - Laggy!
       - Crash on reading properties of undefined '0' let new_x = ingredient.center[0] + ingredient.direction[0] * this.speed_mult;
+        - From level prog
       - [Violation] 'requestAnimationFrame' handler took 67ms
       - Mem leaks?
   - Fix collisions
