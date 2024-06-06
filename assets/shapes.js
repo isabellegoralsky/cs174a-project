@@ -6,6 +6,28 @@ const {
 
 export const custom_shapes = {};
 
+const StrawberryShape = custom_shapes.StrawberryShape = class StrawberryShape extends Shape {
+    constructor() {
+        super("position", "normal", "texture_coord");
+
+        const subdivisionSphere = new defs.Subdivision_Sphere(4);
+
+        const scalingMatrix = Mat4.scale(1, 1.5, 1); // Scale to form a general strawberry shape
+
+        // Apply transformations to vertices
+        for (let i = 0; i < subdivisionSphere.arrays.position.length; i++) {
+            const pos = subdivisionSphere.arrays.position[i];
+            const transformedPos = scalingMatrix.times(pos.to4(1)).to3();
+            this.arrays.position.push(transformedPos);
+            this.arrays.normal.push(pos.normalized()); // Normals need to be recalculated if scaling non-uniformly
+            this.arrays.texture_coord.push(subdivisionSphere.arrays.texture_coord[i]);
+        }
+
+        // Copy the indices
+        this.indices.push(...subdivisionSphere.indices);
+    }
+}
+
 const Circle = custom_shapes.Circle =
     class Circle extends Shape {
         // **FullCircle** A 2D Circle Shape with a given number of segments.
