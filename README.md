@@ -5,8 +5,8 @@ Welcome to the fruit stand! Our customers are thirsty, and they want their smoot
 ## TDL
 - Fix board thing (isabelle)
   - Make the fruits look like they do inside
-    - DONE: watermelon, kiwi, cranberry, blueberry, banana, bases (apple, peach, cherry, orange, strawberry)
-    - needs: strawberry leaf, apple stem/leaf, orange leaf, peach leaf, cherry stems
+    - DONE: watermelon, kiwi, cranberry, peach, blueberry, banana, orange, bases (apple, cherry), apple leaf, strawberry
+    - needs: apple stem, cherry stems
 - Add fruits (isabelle)
   - Finish raspberries
 - Clean/organize code

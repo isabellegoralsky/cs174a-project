@@ -461,6 +461,8 @@ export class BruinSmoothies extends Scene {
                 .times(Mat4.translation(ingredient.center[0], ingredient.center[1], ingredient.center[2]))
                 .times(Mat4.scale(ingredient.radius, ingredient.radius, ingredient.radius));
 
+
+            let ingr_mtx_non_rotate = ingr_mtx
             // getting the fruits to look right
             if (ingredient instanceof Banana){
                 ingr_mtx = ingr_mtx.times(Mat4.scale(2.2, 1, 1))
@@ -475,13 +477,50 @@ export class BruinSmoothies extends Scene {
                     .times(Mat4.scale(1, 0.8984375, .65))
                     .times(Mat4.rotation(Math.PI / 2, 0, 1, 0))
                     .times(Mat4.rotation(-Math.PI/3, 0,0,1));
-            }else if (ingredient instanceof Orange || ingredient instanceof Watermelon || ingredient instanceof Kiwi || ingredient instanceof Strawberry) {
+            }else if (ingredient instanceof Orange || ingredient instanceof Watermelon || ingredient instanceof Kiwi) {
                 ingr_mtx = ingr_mtx
                     .times(Mat4.rotation(-Math.PI/3, 1,0,0));
+            } else if (ingredient instanceof Strawberry){
+                ingr_mtx = ingr_mtx
+                    .times(Mat4.rotation(-Math.PI/3, 1,0,0))
+                    .times(Mat4.scale(1,.8,1));
             }
 
-
             ingredient.shape.draw(context, program_state, ingr_mtx, ingredient.material);
+
+            if (ingredient.shape2 !== null) {
+                let leaf_transform = ingr_mtx_non_rotate;
+                let leaf_offset = Mat4.identity();
+
+                if (ingredient instanceof Apple) {
+                    //apple leaf
+                    leaf_offset = leaf_offset.times(Mat4.scale(0.3125, 0.34782608695, 0.3125))
+                    leaf_offset = leaf_offset.times(Mat4.translation(0, 3.75, 0)).times(Mat4.rotation(Math.PI / 2, 0, 0, 1));
+                    leaf_transform = leaf_transform.times(leaf_offset).times(Mat4.scale(.8, .8, .8)).times(Mat4.rotation(-Math.PI/3, 0,0,1));
+                }  else if (ingredient instanceof Orange) {
+                    // orange leaf
+                    leaf_offset = Mat4.translation(0, 0.4, 0).times(Mat4.rotation(Math.PI / 3, 0, 0, 1)).times(Mat4.rotation(Math.PI / 3, 0, 1, 0));
+                    leaf_transform = leaf_transform.times(leaf_offset).times(Mat4.scale(1.2, .5, 1.8));
+                }  else if (ingredient instanceof Peach) {
+                    // peach leaf
+                    leaf_offset = Mat4.translation(0, 0.9, 0).times(Mat4.rotation(Math.PI / 3, 0, 0, 1)).times(Mat4.rotation(Math.PI / 3, 0, 1, 0));
+                    leaf_transform = leaf_transform.times(leaf_offset).times(Mat4.scale(.2, .5, 1));
+                }  else if (ingredient instanceof Strawberry){
+                       leaf_offset = Mat4.translation(0, 1, 0).times(Mat4.rotation(Math.PI / 3, 0, 0, 1)).times(Mat4.rotation(Math.PI / 3, 0, 1, 0));
+                       leaf_transform = leaf_transform.times(leaf_offset).times(Mat4.scale(.8, .5, .8)).times(Mat4.rotation(-Math.PI/3, 0,0,1))
+                           .times(Mat4.translation(0, .8, 0));
+
+                       ingredient.shape2.draw(context, program_state, leaf_transform, ingredient.material2);
+                       
+                       leaf_transform = leaf_transform.times(Mat4.translation(-.5,0,0));
+                       ingredient.shape2.draw(context, program_state, leaf_transform, ingredient.material2);
+                }   else if (ingredient instanceof Apple) {
+
+                }
+
+                ingredient.shape2.draw(context, program_state, leaf_transform, ingredient.material2);
+            }
+
         }
     }
 
@@ -750,9 +789,7 @@ export class BruinSmoothies extends Scene {
                     leaf_offset = Mat4.translation(0, 0.5, 0).times(Mat4.rotation(Math.PI / 3, 0, 0, 1)).times(Mat4.rotation(Math.PI / 3, 0, 1, 0));
                     leaf_transform = leaf_transform.times(leaf_offset).times(Mat4.scale(1.2, .5, 1.8));
                 } else if (ingredient instanceof Peach){
-
                     leaf_offset = Mat4.translation(0, 0.5, 0).times(Mat4.rotation(Math.PI / 3, 0, 0, 1)).times(Mat4.rotation(Math.PI / 3, 0, 1, 0));
-                    //leaf_transform = leaf_transform.times(leaf_offset).times(Mat4.scale(.7, .5, 1.8));
                     leaf_transform = leaf_transform.times(leaf_offset).times(Mat4.scale(.2, .5, 1));
                 } else if (ingredient instanceof Cherry) {
                     // cherry stem 1
@@ -763,7 +800,6 @@ export class BruinSmoothies extends Scene {
                         .times(Mat4.scale(.05, 1.5, .8));
                 }else if (ingredient instanceof Strawberry){
                     leaf_offset = Mat4.translation(0, 1.5, 0).times(Mat4.rotation(Math.PI / 3, 0, 0, 1)).times(Mat4.rotation(Math.PI / 3, 0, 1, 0));
-                    //leaf_transform = leaf_transform.times(leaf_offset).times(Mat4.scale(.7, .5, 1.8
                     leaf_transform = leaf_transform.times(leaf_offset).times(Mat4.scale(.8, .5, .8));
                 }else {
                     leaf_transform = leaf_transform.times(Mat4.scale(.9, .9, 1)).times(Mat4.translation(0, 0, .0001));
