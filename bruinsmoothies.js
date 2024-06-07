@@ -485,7 +485,6 @@ export class BruinSmoothies extends Scene {
                     .times(Mat4.rotation(-Math.PI/3, 1,0,0))
                     .times(Mat4.scale(1,.8,1));
             }
-
             ingredient.shape.draw(context, program_state, ingr_mtx, ingredient.material);
 
             if (ingredient.shape2 !== null) {
@@ -495,8 +494,8 @@ export class BruinSmoothies extends Scene {
                 if (ingredient instanceof Apple) {
                     //apple leaf
                     leaf_offset = leaf_offset.times(Mat4.scale(0.3125, 0.34782608695, 0.3125))
-                    leaf_offset = leaf_offset.times(Mat4.translation(0, 3.75, 0)).times(Mat4.rotation(Math.PI / 2, 0, 0, 1));
-                    leaf_transform = leaf_transform.times(leaf_offset).times(Mat4.scale(.8, .8, .8)).times(Mat4.rotation(-Math.PI/3, 0,0,1));
+                    leaf_offset = leaf_offset.times(Mat4.translation(.3, 3.75, 0)).times(Mat4.rotation(Math.PI / 2, 0, 0, 1));
+                    leaf_transform = leaf_transform.times(leaf_offset).times(Mat4.scale(1, 1, 1)).times(Mat4.rotation(-Math.PI/3, 0,0,1));
                 }  else if (ingredient instanceof Orange) {
                     // orange leaf
                     leaf_offset = Mat4.translation(0, 0.4, 0).times(Mat4.rotation(Math.PI / 3, 0, 0, 1)).times(Mat4.rotation(Math.PI / 3, 0, 1, 0));
@@ -514,11 +513,45 @@ export class BruinSmoothies extends Scene {
                        
                        leaf_transform = leaf_transform.times(Mat4.translation(-.5,0,0));
                        ingredient.shape2.draw(context, program_state, leaf_transform, ingredient.material2);
-                }   else if (ingredient instanceof Apple) {
+                } else if (ingredient instanceof Cherry) {
+                    // cherry stem 1
+                    leaf_transform = leaf_transform
+                        .times(Mat4.translation(-.6, .8, -.3))
+                        .times(Mat4.rotation(-Math.PI / 8, 1, 0, 0))
+                        .times(Mat4.rotation(-Math.PI / 16, 0, 0, 1))
+                        .times(Mat4.scale(.05, 1.5, .8))
+                        .times(Mat4.rotation(-Math.PI/6, 1,0,0))
+                        .times(Mat4.translation(.1, .2, -.5));
+                    ingredient.shape2.draw(context, program_state, leaf_transform, ingredient.material2);
 
+                    // cherry stem 2
+                    leaf_transform = ingr_mtx_non_rotate
+                        .times(Mat4.translation(-.6, .8, -.3))
+                        .times(Mat4.rotation(-Math.PI/8, 1,0,0))
+                        .times(Mat4.rotation(Math.PI/16, 0,0,1))
+                        .times(Mat4.scale(.05, 1.5, .8))
+                        .times(Mat4.translation(8,0,0))
+                        .times(Mat4.rotation(-Math.PI/6, 1,0,0))
+                        .times(Mat4.translation(0,0, -.5));
+                }
+                
+                ingredient.shape2.draw(context, program_state, leaf_transform, ingredient.material2);
+            }
+
+            if (ingredient.shape3 !== null) {
+                let apple_stem = ingr_mtx_non_rotate;
+                if (ingredient instanceof Apple) {
+                    // apple stem
+                    apple_stem = apple_stem.times(Mat4.scale(0.3125, 0.34782608695, 0.3125))
+                    apple_stem = apple_stem
+                        .times(Mat4.translation(-.5, 1, -1))
+                        .times(Mat4.scale(.1, 1, .8))
+                        .times(Mat4.rotation(-Math.PI/3, 1,0,0))
+                        .times(Mat4.translation(0,0,-.3));
+
+                    ingredient.shape3.draw(context, program_state, apple_stem, ingredient.material3);
                 }
 
-                ingredient.shape2.draw(context, program_state, leaf_transform, ingredient.material2);
             }
 
         }
@@ -757,23 +790,7 @@ export class BruinSmoothies extends Scene {
                     .times(Mat4.scale(1, 0.8984375, 1))
                     .times(Mat4.rotation(Math.PI / 2, 0, 1, 0));
             }
-
-            // if (ingredient instanceof Raspberry) {
-            //     ingredient.shape.draw(context, program_state, shape_mtx, ingredient.material);
-            //     shape_mtx = shape_mtx.times(Mat4.translation(-1,0,0));
-            //     ingredient.shape.draw(context, program_state, shape_mtx, ingredient.material);
-            //     shape_mtx = shape_mtx.times(Mat4.translation(2,0,0));
-            //     ingredient.shape.draw(context, program_state, shape_mtx, ingredient.material);
-            //     shape_mtx = shape_mtx.times(Mat4.translation(-.5,-2,0));
-            //     ingredient.shape.draw(context, program_state, shape_mtx, ingredient.material);
-            //     shape_mtx = shape_mtx.times(Mat4.translation(-1.5,0,0));
-            //     ingredient.shape.draw(context, program_state, shape_mtx, ingredient.material);
-            //     shape_mtx = shape_mtx.times(Mat4.translation(.5,-2,0));
-            //     ingredient.shape.draw(context, program_state, shape_mtx, ingredient.material);
-            //
-            // } else {
             ingredient.shape.draw(context, program_state, shape_mtx, ingredient.material);
-            // }
 
             if (ingredient.shape2 !== null) {
                 // below line proves Orange enters here
@@ -830,20 +847,8 @@ export class BruinSmoothies extends Scene {
                     shp3_transform = shp3_transform.times(Mat4.scale(0.3125, 0.34782608695, 0.3125))
                     shp3_transform = shp3_transform.times(Mat4.translation(-.5, 2, 0)).times(Mat4.scale(.1, 1, .8));
                     ingredient.shape3.draw(context, program_state, shp3_transform, ingredient.material3);
-                } else {
-                    // watermelon seeds
-                    //top 3
-                    shp3_transform = shp3_transform.times(Mat4.scale(.04, .065, 1)).times(Mat4.translation(0, 0, .0002));
-                    ingredient.shape3.draw(context, program_state, shp3_transform.times(Mat4.translation(-5, 5, 0)), ingredient.material3);
-                    ingredient.shape3.draw(context, program_state, shp3_transform.times(Mat4.translation(5, 5, 0)), ingredient.material3);
-                    ingredient.shape3.draw(context, program_state, shp3_transform.times(Mat4.translation(0, 6, 0)), ingredient.material3);
+                } 
 
-                    // bottom 4
-                    ingredient.shape3.draw(context, program_state, shp3_transform.times(Mat4.translation(-9, 8, 0)), ingredient.material3);
-                    ingredient.shape3.draw(context, program_state, shp3_transform.times(Mat4.translation(9, 8, 0)), ingredient.material3);
-                    ingredient.shape3.draw(context, program_state, shp3_transform.times(Mat4.translation(-3, 9.5, 0)), ingredient.material3);
-                    ingredient.shape3.draw(context, program_state, shp3_transform.times(Mat4.translation(3, 9.5, 0)), ingredient.material3);
-                }
             }
 
             ingredient.center[0] = new_x;
