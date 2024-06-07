@@ -83,7 +83,7 @@ const STRAWBERRY_MATERIAL_1 = new Material(new Textured_Phong(), {
 });
 const STRAWBERRY_MATERIAL_2 = new Material(new defs.Phong_Shader(), {ambient: 1, diffusivity: 0.2, specularity: 0.1, color: hex_color("#0e6102")});
 
-const RASPBERRY_SHAPE_1 = new defs.Subdivision_Sphere(4);
+const RASPBERRY_SHAPE_1 = new custom_shapes.RaspberryShape(.7);
 const RASPBERRY_MATERIAL_1 = new Material(new Textured_Phong(), {
     color: hex_color("#000000"),
     ambient: 1, diffusivity: 0.1, specularity: 0.1,
@@ -484,6 +484,9 @@ export class BruinSmoothies extends Scene {
                 ingr_mtx = ingr_mtx
                     .times(Mat4.rotation(-Math.PI/3, 1,0,0))
                     .times(Mat4.scale(1,.8,1));
+            } else if (ingredient instanceof Raspberry){
+                ingr_mtx = ingr_mtx
+                    .times(Mat4.rotation(-Math.PI/6, 1,0,0));
             }
             ingredient.shape.draw(context, program_state, ingr_mtx, ingredient.material);
 
@@ -603,7 +606,17 @@ export class BruinSmoothies extends Scene {
             if (ingredient.center[2] - 5 <= -half_depth || ingredient.center[2] + 1 >= half_depth) {
                 ingredient.direction[2] *= -1;
             }
-        } else {
+        } else if (ingredient instanceof Raspberry){
+            if (ingredient.center[0] - 1 <= -half_width || ingredient.center[0] + 1 >= half_width) {
+                ingredient.direction[0] *= -1;
+            }
+            if (ingredient.center[1] - 1 <= -half_height || ingredient.center[1] + 1 >= half_height) {
+                ingredient.direction[1] *= -1;
+            }
+            if (ingredient.center[2] - 1 <= -half_depth || ingredient.center[2] + 1 >= half_depth) {
+                ingredient.direction[2] *= -1;
+            }
+        }else {
             if (ingredient.center[0] - ingredient.radius <= -half_width || ingredient.center[0] + ingredient.radius >= half_width) {
                 ingredient.direction[0] *= -1;
             }

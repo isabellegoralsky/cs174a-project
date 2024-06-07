@@ -6,6 +6,170 @@ const {
 
 export const custom_shapes = {};
 
+const HalfRaspberry = custom_shapes.HalfRaspberry = class HalfRaspberry extends Shape {
+    constructor() {
+        super("position", "normal", "texture_coord");
+
+        const numSegments = 20; // Number of segments for smoothness
+        const radius = 0.4; // Radius of the raspberry
+        const height = 0.8; // Height of the raspberry
+
+        for (let i = 0; i <= numSegments; i++) {
+            const theta = i * Math.PI / numSegments; // Angle for height segments
+
+            for (let j = 0; j <= numSegments; j++) {
+                const phi = j * 2 * Math.PI / numSegments; // Angle for circular segments
+
+                // Calculate the x, y, z positions of the vertices
+                const x = radius * Math.sin(theta) * Math.cos(phi);
+                const y = height * (Math.cos(theta) - 0.5); // Adjusted to look more like a raspberry
+                const z = radius * Math.sin(theta) * Math.sin(phi);
+
+                // Push the position
+                this.arrays.position.push(vec3(x, y, z));
+
+                // Calculate and push the normal
+                const normal = vec3(x, y, z).normalized();
+                this.arrays.normal.push(normal);
+
+                // Push the texture coordinate
+                this.arrays.texture_coord.push(vec(j / numSegments, i / numSegments));
+            }
+        }
+
+        // Create the indices for the raspberry shape
+        for (let i = 0; i < numSegments; i++) {
+            for (let j = 0; j < numSegments; j++) {
+                const first = i * (numSegments + 1) + j;
+                const second = first + numSegments + 1;
+
+                this.indices.push(first, second, first + 1);
+                this.indices.push(second, second + 1, first + 1);
+            }
+        }
+    }
+}
+
+const RaspberryShape = custom_shapes.RaspberryShape = class RaspberryShape extends Shape {
+    constructor(off) {
+        super("position", "normal", "texture_coord");
+
+        const halfRaspberry1 = new custom_shapes.HalfRaspberry();
+        const halfRaspberry2 = new custom_shapes.HalfRaspberry();
+        const halfRaspberry3 = new custom_shapes.HalfRaspberry();
+
+        // Offset the second half to form the complete raspberry
+        const offset = Mat4.translation(off, 0, 0);
+
+        const halfRaspberry7 = new custom_shapes.HalfRaspberry();
+        const halfRaspberry8 = new custom_shapes.HalfRaspberry();
+
+        // Merge the first half raspberry vertices
+        this.arrays.position.push(...halfRaspberry1.arrays.position);
+        this.arrays.normal.push(...halfRaspberry1.arrays.normal);
+        this.arrays.texture_coord.push(...halfRaspberry1.arrays.texture_coord);
+
+        // Merge the second half raspberry vertices
+        for (let i = 0; i < halfRaspberry2.arrays.position.length; i++) {
+            const pos = halfRaspberry2.arrays.position[i];
+            const transformedPos = offset.times(pos.to4(1)).to3();
+            this.arrays.position.push(transformedPos);
+            this.arrays.normal.push(halfRaspberry2.arrays.normal[i]);
+            this.arrays.texture_coord.push(halfRaspberry2.arrays.texture_coord[i]);
+        }
+
+        const offset3 = Mat4.translation(-1 * off, 0, 0);
+        for (let i = 0; i < halfRaspberry3.arrays.position.length; i++) {
+            const pos = halfRaspberry3.arrays.position[i];
+            const transformedPos = offset3.times(pos.to4(1)).to3();
+            this.arrays.position.push(transformedPos);
+            this.arrays.normal.push(halfRaspberry3.arrays.normal[i]);
+            this.arrays.texture_coord.push(halfRaspberry3.arrays.texture_coord[i]);
+        }
+
+        const halfRaspberry4 = new custom_shapes.HalfRaspberry();
+        const offset2 = Mat4.translation(off-1.2, -2*off, 0);
+
+        for (let i = 0; i < halfRaspberry4.arrays.position.length; i++) {
+            const pos = halfRaspberry4.arrays.position[i];
+            const transformedPos = offset2.times(pos.to4(1)).to3();
+            this.arrays.position.push(transformedPos);
+            this.arrays.normal.push(halfRaspberry4.arrays.normal[i]);
+            this.arrays.texture_coord.push(halfRaspberry4.arrays.texture_coord[i]);
+        }
+
+        const halfRaspberry5 = new custom_shapes.HalfRaspberry();
+        const offset4 = Mat4.translation(off-.35, -2*off, 0);
+        for (let i = 0; i < halfRaspberry5.arrays.position.length; i++) {
+            const pos = halfRaspberry5.arrays.position[i];
+            const transformedPos = offset4.times(pos.to4(1)).to3();
+            this.arrays.position.push(transformedPos);
+            this.arrays.normal.push(halfRaspberry5.arrays.normal[i]);
+            this.arrays.texture_coord.push(halfRaspberry5.arrays.texture_coord[i]);
+        }
+
+        const halfRaspberry6 = new custom_shapes.HalfRaspberry();
+        const offset5 = Mat4.translation(off-.75, -3.2*off, 0);
+        for (let i = 0; i < halfRaspberry6.arrays.position.length; i++) {
+            const pos = halfRaspberry6.arrays.position[i];
+            const transformedPos = offset5.times(pos.to4(1)).to3();
+            this.arrays.position.push(transformedPos);
+            this.arrays.normal.push(halfRaspberry6.arrays.normal[i]);
+            this.arrays.texture_coord.push(halfRaspberry6.arrays.texture_coord[i]);
+        }
+
+        const offset7 = Mat4.translation(off-1, 0, -.5);
+        for (let i = 0; i < halfRaspberry7.arrays.position.length; i++) {
+            const pos = halfRaspberry7.arrays.position[i];
+            const transformedPos = offset7.times(pos.to4(1)).to3();
+            this.arrays.position.push(transformedPos);
+            this.arrays.normal.push(halfRaspberry7.arrays.normal[i]);
+            this.arrays.texture_coord.push(halfRaspberry7.arrays.texture_coord[i]);
+        }
+
+        const offset8 = Mat4.translation(.5, 0, -.5);
+        for (let i = 0; i < halfRaspberry8.arrays.position.length; i++) {
+            const pos = halfRaspberry8.arrays.position[i];
+            const transformedPos = offset8.times(pos.to4(1)).to3();
+            this.arrays.position.push(transformedPos);
+            this.arrays.normal.push(halfRaspberry8.arrays.normal[i]);
+            this.arrays.texture_coord.push(halfRaspberry8.arrays.texture_coord[i]);
+        }
+
+        // Merge the indices
+        let len = halfRaspberry1.arrays.position.length;
+        this.indices.push(...halfRaspberry1.indices);
+        for (let i = 0; i < halfRaspberry2.indices.length; i++) {
+            this.indices.push(halfRaspberry2.indices[i] + len);
+        }
+        len = len + halfRaspberry2.arrays.position.length;
+        for (let i = 0; i < halfRaspberry3.indices.length; i++) {
+            this.indices.push(halfRaspberry3.indices[i] + len);
+        }
+        len = len + halfRaspberry3.arrays.position.length;
+        for (let i = 0; i < halfRaspberry4.indices.length; i++) {
+            this.indices.push(halfRaspberry4.indices[i] + len);
+        }
+        len = len + halfRaspberry4.arrays.position.length;
+        for (let i = 0; i < halfRaspberry5.indices.length; i++) {
+            this.indices.push(halfRaspberry5.indices[i] + len);
+        }
+        len = len + halfRaspberry5.arrays.position.length;
+        for (let i = 0; i < halfRaspberry6.indices.length; i++) {
+            this.indices.push(halfRaspberry6.indices[i] + len);
+        }
+        len = len + halfRaspberry6.arrays.position.length;
+        for (let i = 0; i < halfRaspberry7.indices.length; i++) {
+            this.indices.push(halfRaspberry7.indices[i] + len);
+        }
+        len = len + halfRaspberry7.arrays.position.length;
+        for (let i = 0; i < halfRaspberry8.indices.length; i++) {
+            this.indices.push(halfRaspberry8.indices[i] + len);
+        }
+    }
+}
+
+
 const StrawberryShape = custom_shapes.StrawberryShape = class StrawberryShape extends Shape {
     constructor() {
         super("position", "normal", "texture_coord");
@@ -27,76 +191,6 @@ const StrawberryShape = custom_shapes.StrawberryShape = class StrawberryShape ex
         this.indices.push(...subdivisionSphere.indices);
     }
 }
-
-const Circle = custom_shapes.Circle =
-    class Circle extends Shape {
-        // **FullCircle** A 2D Circle Shape with a given number of segments.
-        constructor(num_segments = 30) {
-            super("position", "normal", "texture_coord");
-
-            // Calculate the angle between each segment
-            const angle_step = 2 * Math.PI / num_segments;
-
-            // Center vertex
-            this.arrays.position.push(vec3(0, 0, 0));
-            this.arrays.normal.push(vec3(0, 0, 1));
-            this.arrays.texture_coord.push(vec(0.5, 0.5));
-
-            // Vertices around the circumference of the circle
-            for (let i = 0; i <= num_segments; i++) {
-                const angle = i * angle_step;
-                const x = Math.cos(angle);
-                const y = Math.sin(angle);
-
-                this.arrays.position.push(vec3(x, y, 0));
-                this.arrays.normal.push(vec3(0, 0, 1));
-                this.arrays.texture_coord.push(vec(0.5 + 0.5 * x, 0.5 + 0.5 * y));
-
-                if (i > 0) {
-                    this.indices.push(0, i, i + 1);
-                }
-            }
-
-            // Connect the last vertex back to the first circumference vertex to close the circle
-            this.indices.push(0, num_segments, 1);
-        }}
-
-const HalfCircle = custom_shapes.HalfCircle =
-    class HalfCircle extends Shape {
-        // **HalfCircle** A 2D Half Circle Shape with a given number of segments.
-        constructor(num_segments = 30) {
-            super("position", "normal", "texture_coord");
-
-            // Calculate the angle between each segment
-            const angle_step = Math.PI / num_segments;
-
-            // Center vertex
-            this.arrays.position.push(vec3(0, 0, 0));
-            this.arrays.normal.push(vec3(0, 0, 1));
-            this.arrays.texture_coord.push(vec(0.5, 0.5));
-
-            // Vertices around the circumference of the half circle
-            for (let i = 0; i <= num_segments; i++) {
-                const angle = i * angle_step;
-                const x = Math.cos(angle);
-                const y = Math.sin(angle);
-
-                this.arrays.position.push(vec3(x, y, 0));
-                this.arrays.normal.push(vec3(0, 0, 1));
-                this.arrays.texture_coord.push(vec(0.5 + 0.5 * x, 0.5 + 0.5 * y));
-
-                if (i > 0) {
-                    this.indices.push(0, i, i + 1);
-                }
-            }
-
-            // Close the half circle by connecting the last vertex to the edge vertex at -1 in the x-axis
-            this.arrays.position.push(vec3(-1, 0, 0));
-            this.arrays.normal.push(vec3(0, 0, 1));
-            this.arrays.texture_coord.push(vec(0, 0.5));
-            this.indices.push(0, num_segments + 1, 1);
-        }
-    }
 
 const HalfApple = custom_shapes.HalfApple = class HalfApple extends Shape {
     constructor() {
